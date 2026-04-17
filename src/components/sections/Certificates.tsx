@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { AnimatedList, AnimatedItem } from "@/components/ui/AnimatedText";
 import { certificates, type Certificate } from "@/data/certificates";
+import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
 
 // ─── Utility: group certificates by institution ───────────────
 function groupByInstitution(certs: Certificate[]): Map<string, Certificate[]> {
@@ -199,7 +200,7 @@ export function Certificates() {
       id="certificates"
       className="section-padding border-t border-border"
     >
-      <div className="container-main">
+      <Parallax3DLayer depth={0.8} className="container-main">
         {/* Header */}
         <div className="mb-10">
           <SectionLabel index={3}>certificados</SectionLabel>
@@ -233,7 +234,7 @@ export function Certificates() {
             )
           )}
         </AnimatedList>
-      </div>
+      </Parallax3DLayer>
     </section>
   );
 }

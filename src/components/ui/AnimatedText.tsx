@@ -32,7 +32,7 @@ interface AnimatedTextProps {
 
 export function AnimatedText({
   children,
-  as: Tag = "p",
+  as: Tag = "div",
   className = "",
   delay = 0,
 }: AnimatedTextProps) {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
+import { Check } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────
 interface FormFields {
@@ -170,9 +171,10 @@ export function ContactForm() {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            className="font-mono text-xs text-accent text-center py-1"
+            className="font-mono text-xs text-accent text-center py-1 flex items-center justify-center gap-1.5"
           >
-            ✓ Mensagem enviada com sucesso!
+            <Check size={13} strokeWidth={2} className="inline-block" />
+            Mensagem enviada com sucesso!
           </motion.p>
         )}
         {status === "error" && (

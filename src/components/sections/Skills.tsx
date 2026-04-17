@@ -2,9 +2,20 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import {
+  Server,
+  Monitor,
+  Database,
+  Layers,
+  GitBranch,
+  FlaskConical,
+  Lightbulb,
+  type LucideProps,
+} from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { SkillTag } from "@/components/ui/SkillTag";
 import { skillGroups } from "@/data/skills";
+import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
 
 // ─── Primary skills receive highlighted treatment ─────────────
 const PRIMARY_SKILLS = new Set([
@@ -13,6 +24,19 @@ const PRIMARY_SKILLS = new Set([
   "TypeScript",
   "Angular",
 ]);
+
+// ─── Icon lookup table ────────────────────────────────────────
+type LucideIcon = React.ComponentType<LucideProps>;
+
+const SKILL_ICONS: Record<string, LucideIcon> = {
+  Server,
+  Monitor,
+  Database,
+  Layers,
+  GitBranch,
+  FlaskConical,
+  Lightbulb,
+};
 
 // ─── Single skill group card ──────────────────────────────────
 interface SkillGroupCardProps {
@@ -30,6 +54,8 @@ function SkillGroupCard({
   groupIndex,
   isInView,
 }: SkillGroupCardProps) {
+  const IconComponent = SKILL_ICONS[icon];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
@@ -43,13 +69,13 @@ function SkillGroupCard({
     >
       {/* Group header */}
       <div className="flex items-center gap-3 mb-5">
-        <span
-          className="text-lg leading-none"
-          role="img"
-          aria-hidden="true"
-        >
-          {icon}
-        </span>
+        {IconComponent && (
+          <IconComponent
+            size={14}
+            strokeWidth={1.5}
+            className="text-muted/60 group-hover:text-accent/60 transition-colors duration-200 shrink-0"
+          />
+        )}
         <span className="font-mono text-[11px] tracking-[0.15em] uppercase text-muted/80 group-hover:text-muted transition-colors duration-200">
           {group}
         </span>
@@ -77,7 +103,6 @@ export function Skills() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
-  // Total count for the subtitle
   const totalSkills = skillGroups.reduce((acc, g) => acc + g.skills.length, 0);
 
   return (
@@ -86,7 +111,7 @@ export function Skills() {
       id="skills"
       className="section-padding border-t border-border"
     >
-      <div className="container-main">
+      <Parallax3DLayer depth={0.8} className="container-main">
         {/* ── Header ── */}
         <div className="mb-14">
           <motion.div
@@ -175,7 +200,7 @@ export function Skills() {
             </p>
           </div>
         </motion.div>
-      </div>
+      </Parallax3DLayer>
     </section>
   );
 }

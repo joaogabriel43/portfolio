@@ -4,22 +4,26 @@ import { AnimatedText } from "@/components/ui/AnimatedText";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { projects, type Project } from "@/data/projects";
+import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
 
 // ─── Layout logic ─────────────────────────────────────────────
-// Row 1: first featured (col-span-8) + first non-featured (col-span-4)
-// Row 2: remaining featured (col-span-12, full-width)
+// Row 1: featured[0] (8/12) + others[0] (4/12)
+// Row 2: featured[1] (6/12) + others[1] (6/12)
+// Extras: full-width featured | half-width others
 function buildLayout(items: Project[]): Array<Project & { colSpan: string }> {
   const featured = items.filter((p) => p.featured);
   const others = items.filter((p) => !p.featured);
 
   return [
-    // Row 1 pair
+    // Row 1 — hero featured + compact non-featured
     ...(featured[0] ? [{ ...featured[0], colSpan: "col-span-full lg:col-span-8" }] : []),
     ...(others[0]   ? [{ ...others[0],   colSpan: "col-span-full lg:col-span-4" }] : []),
-    // Remaining featured — full width
-    ...featured.slice(1).map((p) => ({ ...p, colSpan: "col-span-full" })),
-    // Remaining non-featured — half
-    ...others.slice(1).map((p) => ({ ...p, colSpan: "col-span-full lg:col-span-6" })),
+    // Row 2 — second featured + second non-featured, equal halves
+    ...(featured[1] ? [{ ...featured[1], colSpan: "col-span-full lg:col-span-6" }] : []),
+    ...(others[1]   ? [{ ...others[1],   colSpan: "col-span-full lg:col-span-6" }] : []),
+    // Overflow — full-width featured, half-width others
+    ...featured.slice(2).map((p) => ({ ...p, colSpan: "col-span-full" })),
+    ...others.slice(2).map((p) => ({ ...p, colSpan: "col-span-full lg:col-span-6" })),
   ];
 }
 
@@ -28,7 +32,7 @@ export function Projects() {
 
   return (
     <section id="projects" className="section-padding border-t border-border">
-      <div className="container-main">
+      <Parallax3DLayer depth={0.8} className="container-main">
         {/* ── Header ── */}
         <div className="mb-14">
           <div className="mb-5">
@@ -57,7 +61,7 @@ export function Projects() {
             </div>
           ))}
         </div>
-      </div>
+      </Parallax3DLayer>
     </section>
   );
 }

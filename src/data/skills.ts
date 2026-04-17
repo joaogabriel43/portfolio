@@ -7,7 +7,7 @@ export interface SkillGroup {
 export const skillGroups: SkillGroup[] = [
   {
     group: "Backend",
-    icon: "⚙️",
+    icon: "Server",
     skills: [
       "Java",
       "Spring Boot",
@@ -21,7 +21,7 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     group: "Frontend",
-    icon: "🖥️",
+    icon: "Monitor",
     skills: [
       "TypeScript",
       "Angular",
@@ -35,7 +35,7 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     group: "Banco de Dados",
-    icon: "🗄️",
+    icon: "Database",
     skills: [
       "SQL Server",
       "PostgreSQL",
@@ -45,7 +45,7 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     group: "Arquitetura",
-    icon: "🏛️",
+    icon: "Layers",
     skills: [
       "Clean Architecture",
       "DDD",
@@ -58,7 +58,7 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     group: "DevOps",
-    icon: "🚀",
+    icon: "GitBranch",
     skills: [
       "Git",
       "Docker",
@@ -70,7 +70,7 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     group: "Testes",
-    icon: "✅",
+    icon: "FlaskConical",
     skills: [
       "JUnit 5",
       "Mockito",
@@ -79,7 +79,7 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     group: "Soft Skills",
-    icon: "💡",
+    icon: "Lightbulb",
     skills: [
       "Autodidata",
       "Comunicativo",

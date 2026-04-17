@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import type { Project } from "@/data/projects";
@@ -124,7 +125,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         </div>
 
         {/* Links */}
-        <div className="flex items-center gap-3 pt-5 border-t border-border/60">
+        <div className="flex items-center gap-3 pt-5 border-t border-border/60 flex-wrap">
           <motion.a
             href={project.githubUrl}
             target="_blank"
@@ -151,6 +152,20 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 Demo live
                 <ExternalLinkIcon />
               </motion.a>
+            </>
+          )}
+
+          {project.caseStudy && (
+            <>
+              <span className="w-px h-3 bg-border" />
+              <motion.div whileHover={{ x: 2 }} transition={{ duration: 0.15 }}>
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="inline-flex items-center gap-1.5 font-mono text-xs text-foreground/60 hover:text-foreground transition-colors duration-200"
+                >
+                  Ver case study →
+                </Link>
+              </motion.div>
             </>
           )}
         </div>

@@ -45,9 +45,15 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Scroll detection for backdrop
+  // Scroll detection for backdrop + bottom-of-page active fix
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+      // When near the bottom, force "contact" active (last section never fills the observer band)
+      const nearBottom =
+        window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
+      if (nearBottom) setActiveSection("contact");
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { AnimatedText } from "@/components/ui/AnimatedText";
 import { experiences, type Experience } from "@/data/experience";
+import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
 
 // ─── Single experience row ────────────────────────────────────
 interface ExperienceItemProps {
@@ -70,7 +71,7 @@ function ExperienceItem({ exp, index, isLast }: ExperienceItemProps) {
 export function Experience() {
   return (
     <section id="experience" className="section-padding border-t border-border">
-      <div className="container-main">
+      <Parallax3DLayer depth={0.8} className="container-main">
         {/* Header */}
         <div className="mb-4">
           <div className="mb-5">
@@ -96,7 +97,7 @@ export function Experience() {
             />
           ))}
         </div>
-      </div>
+      </Parallax3DLayer>
     </section>
   );
 }

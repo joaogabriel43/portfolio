@@ -5,6 +5,7 @@ import { SectionLabel } from "@/components/ui/SectionLabel";
 import { AnimatedText } from "@/components/ui/AnimatedText";
 import { ContactForm } from "@/components/ui/ContactForm";
 import { personal } from "@/data/personal";
+import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
 
 // ─── Build social links from personal.ts ─────────────────────
 // Strip protocol prefix for display value
@@ -80,7 +81,7 @@ function SocialLink({
 export function Contact() {
   return (
     <section id="contact" className="section-padding border-t border-border">
-      <div className="container-main">
+      <Parallax3DLayer depth={0.8} className="container-main">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-24">
           {/* ── Left: info ── */}
           <div>
@@ -134,7 +135,7 @@ export function Contact() {
             <ContactForm />
           </AnimatedText>
         </div>
-      </div>
+      </Parallax3DLayer>
 
       {/* Footer */}
       <div className="container-main mt-20 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">

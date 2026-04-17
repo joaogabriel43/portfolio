@@ -1,5 +1,5 @@
 # CLAUDE.md — Portfolio João Gabriel Nascimento
-> Versão: 1.0.0 | Última atualização: 2025-03-26
+> Versão: 1.2.0 | Última atualização: 2026-03-27
 
 ---
 
@@ -11,8 +11,9 @@ Single-page com scroll suave, design dark premium e formulário de contato funci
 **Dono:** João Gabriel Nascimento
 **Stack:** Next.js 14 (App Router) + TypeScript + Tailwind CSS + Framer Motion + Resend
 **Hospedagem:** Vercel (deploy automático via git push)
+**Repositório:** https://github.com/joaogabriel43/portfolio
 **URL local:** http://localhost:3000
-**Build status:** ✅ Zero errors, zero TypeScript issues (148 kB first load)
+**Build status:** ✅ Zero errors, zero TypeScript issues (154 kB first load — com Certificates)
 
 ---
 
@@ -34,6 +35,7 @@ src/
 │   │   ├── Hero.tsx
 │   │   ├── About.tsx
 │   │   ├── Skills.tsx
+│   │   ├── Certificates.tsx
 │   │   ├── Projects.tsx
 │   │   ├── Experience.tsx
 │   │   └── Contact.tsx
@@ -49,8 +51,9 @@ src/
 └── data/
     ├── personal.ts         # Nome, bio, contatos, idiomas, formação
     ├── projects.ts         # Projetos com stack, links, featured flag
-    ├── skills.ts           # Grupos de skills com flag primary
-    └── experience.ts       # Experiências com achievements[]
+    ├── skills.ts           # Grupos de skills + soft skills
+    ├── experience.ts       # Experiências com achievements[]
+    └── certificates.ts     # Certificados agrupados por instituição
 public/
 ├── avatar.jpg              # Foto de perfil (copiada do Parquinho do Claude)
 ├── robots.txt
@@ -61,12 +64,23 @@ public/
 
 ## ⚙️ Configurações do Ambiente
 
-### Variáveis de ambiente (.env.local)
+### Variáveis de ambiente (.env.local — desenvolvimento local)
 ```
 RESEND_API_KEY=re_sua_chave_aqui
 CONTACT_EMAIL=joaogabrielnb43@gmail.com
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
+
+### gh CLI — instalação e autenticação no Windows
+`gh` CLI instalado via `winget install --id GitHub.cli`.
+Requer autenticação interativa antes de usar: `gh auth login` (abre o browser).
+Para criar repositório com o projeto local já inicializado:
+```bash
+gh repo create <user>/<repo> --public --source=. --remote=origin --push
+```
+**Atenção:** se o remote `origin` já existir localmente, o `gh repo create` retorna
+"Unable to add remote origin" — é só um aviso, o repo é criado normalmente.
+Resolver com: `git push -u origin main`
 
 ### Scripts disponíveis
 ```bash
@@ -133,6 +147,13 @@ Deploy na Vercel (mesma empresa, integração perfeita).
 
 ## 🤖 Agentes — Casos de Uso Confirmados
 
+### Feature: About float layout (magazine-style)
+Layout CSS float onde o texto da bio flui ao redor da foto circular.
+- Foto: `md:float-right md:ml-10` com clearfix via `after:content-[''] after:block after:clear-both` no container
+- Mobile: `mx-auto block` (sem float)
+- Métricas: `clear-both` garante que ficam abaixo de todo o conteúdo
+- `Parallax3DLayer` único envolve tudo (removido o segundo layer do grid)
+
 ### Feature completa de seção UI
 `@engineering-frontend-developer` → `@engineering-senior-developer` → `@engineering-code-reviewer`
 **Resultado:** Build limpo, zero TS errors, 15/15 tasks completas, 148 kB first load.
@@ -164,10 +185,11 @@ LinkedIn:    linkedin.com/in/joão-gabriel-borba
 - Engenheiro de Aplicativos — Intermidia (Abril 2023 – Presente)
 - Help Desk — Compuletra (Março 2022 – Março 2023)
 
-**Formação:** Sistemas de Informação — Unisinos (previsão 2026)
+**Formação:** Sistemas de Informação — Unisinos (previsão 2025/2)
 
 **Projetos no GitHub:**
-- `gerenciador-pedidos-api` — Java 17, Spring Boot, JUnit 5, Mockito
+- `finassistant` — Next.js, TypeScript, Java, Spring Boot, PostgreSQL, AI Integration (featured)
+- `gerenciador-pedidos-api` — Java 17, Spring Boot, JUnit 5, Mockito (featured)
 - `Screenmatch-frases` — Java, Spring Boot, Spring Data JPA, PostgreSQL
 
 ---
@@ -175,18 +197,27 @@ LinkedIn:    linkedin.com/in/joão-gabriel-borba
 ## 🚀 Deploy
 
 ### Vercel (produção)
-1. `git push origin main` → deploy automático
-2. Variáveis de ambiente configuradas no painel da Vercel:
-   - `RESEND_API_KEY`
-   - `CONTACT_EMAIL`
-   - `NEXT_PUBLIC_SITE_URL`
+1. `git push origin main` → deploy automático via integração GitHub
+2. Variáveis de ambiente no painel Vercel → Settings → Environment Variables:
+   - `RESEND_API_KEY` — chave do Resend para o formulário de contato
+   - `CONTACT_EMAIL` — email que recebe as mensagens (`joaogabrielnb43@gmail.com`)
+   - `NEXT_PUBLIC_SITE_URL` — **preencher APÓS o primeiro deploy** com a URL que a Vercel atribuiu
+
+### ⚠️ NEXT_PUBLIC_SITE_URL — como configurar
+A Vercel atribui um domínio automático no primeiro deploy (ex: `portfolio-xyz.vercel.app`).
+**Fluxo correto:**
+1. Fazer o primeiro deploy **sem** a variável (o código tem fallback em `layout.tsx`)
+2. Vercel exibe a URL final (ex: `https://joaogabriel43-portfolio.vercel.app`)
+3. Ir em Vercel → Project Settings → Environment Variables → adicionar
+   `NEXT_PUBLIC_SITE_URL = https://joaogabriel43-portfolio.vercel.app`
+4. Redeploy (botão "Redeploy" no painel ou novo `git push`)
 
 ### Checklist antes do deploy
-- [ ] `src/data/` preenchido com dados reais
-- [ ] `public/avatar.jpg` presente
-- [ ] `RESEND_API_KEY` configurada
-- [ ] `npm run build` sem erros
-- [ ] Lighthouse ≥ 90 performance, 100 SEO
+- [x] `src/data/` preenchido com dados reais
+- [x] `public/avatar.jpg` presente
+- [x] `vercel.json` com security headers
+- [ ] `RESEND_API_KEY` configurada no painel Vercel
+- [x] `npm run build` sem erros
 
 ---
 
@@ -216,4 +247,6 @@ LinkedIn:    linkedin.com/in/joão-gabriel-borba
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
-| 1.0.0 | 2025-03-26 | Criação inicial — projeto portfolio concluído com build limpo |
+| 1.2.0 | 2026-03-27 | About layout: float magazine-style + case study page /projects/[slug] + Parallax3DLayer em todas as seções + grain melhorado |
+| 1.1.0 | 2026-03-26 | Dados reais João Gabriel, seção Certificates, soft skills, repositório GitHub, instruções gh CLI e NEXT_PUBLIC_SITE_URL |
+| 1.0.0 | 2026-03-26 | Criação inicial — projeto portfolio concluído com build limpo |

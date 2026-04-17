@@ -3,7 +3,9 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
+import { MapPin, GraduationCap, Zap } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
 
 // ─── Highlighted keyword inline component ─────────────────────
 function Kw({ children }: { children: React.ReactNode }) {
@@ -14,46 +16,55 @@ function Kw({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ─── Single metric card ───────────────────────────────────────
+// ─── Single metric — minimal underline style ──────────────────
 interface MetricProps {
   value: string;
   label: string;
   delay: number;
   isInView: boolean;
+  borderRight?: boolean;
+  borderBottom?: boolean;
 }
 
-function Metric({ value, label, delay, isInView }: MetricProps) {
+function Metric({ value, label, delay, isInView, borderRight, borderBottom }: MetricProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
       transition={{ duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className="group relative bg-surface border border-border rounded-sm p-6 hover:border-accent/30 transition-colors duration-300"
+      className={[
+        "group py-6 px-4",
+        borderRight ? "border-r border-white/[0.07]" : "",
+        borderBottom ? "border-b border-white/[0.07]" : "",
+      ].join(" ")}
     >
-      {/* Corner accent */}
-      <div className="absolute top-0 left-0 w-6 h-6 overflow-hidden">
-        <div className="absolute top-0 left-0 w-px h-6 bg-accent/30 group-hover:bg-accent/60 transition-colors duration-300" />
-        <div className="absolute top-0 left-0 w-6 h-px bg-accent/30 group-hover:bg-accent/60 transition-colors duration-300" />
-      </div>
-
-      <p className="font-serif text-4xl font-bold text-accent mb-2 leading-none">
+      <p className="font-serif text-[2.8rem] font-bold text-accent leading-none mb-2">
         {value}
       </p>
-      <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-muted leading-snug">
+      <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-muted leading-snug whitespace-pre-line">
         {label}
       </p>
+      {/* Accent underline — expands on hover */}
+      <div className="w-10 h-px bg-accent/30 mt-3 transition-[width] duration-300 ease-out group-hover:w-full" />
     </motion.div>
   );
 }
 
-// ─── About section ────────────────────────────────────────────
+// ─── About data ───────────────────────────────────────────────
 const METRICS = [
-  { value: "3+",  label: "Anos de\nexperiência" },
-  { value: "2",   label: "Empresas\nno currículo" },
-  { value: "10+", label: "Tecnologias\nno dia a dia" },
+  { value: "3+",   label: "Anos de\nexperiência" },
+  { value: "2",    label: "Empresas\nno currículo" },
+  { value: "10+",  label: "Tecnologias\nno dia a dia" },
   { value: "2026", label: "Formação\nSistemas de Info." },
 ];
 
+const QUICK_FACTS = [
+  { Icon: MapPin,         text: "Porto Alegre, RS" },
+  { Icon: GraduationCap, text: "Aberto a oportunidades" },
+  { Icon: Zap,           text: "Resposta em 24h" },
+] as const;
+
+// ─── About section ────────────────────────────────────────────
 export function About() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
@@ -74,32 +85,67 @@ export function About() {
       className="section-padding border-t border-border"
     >
       <div className="container-main">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-16 xl:gap-24 items-start">
-          {/* ── Left: label + bio ── */}
-          <div>
+        {/*
+         * New layout:
+         * Left  — label + title + bio + quick facts + metrics
+         * Right — round photo (top-aligned, smaller)
+         */}
+        <Parallax3DLayer depth={0.8}>
+          {/* ── Label ── */}
+          <motion.div
+            initial={{ opacity: 0, x: -12 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
+          >
+            <SectionLabel index={1} animate={false}>
+              sobre mim
+            </SectionLabel>
+          </motion.div>
+
+          {/* ── Title (full width, above float) ── */}
+          <motion.h2
+            custom={0.08}
+            variants={textVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-8 leading-[1.1]"
+          >
+            Desenvolvedor focado em{" "}
+            <em className="italic text-accent">qualidade</em>
+            <br />e clareza de código.
+          </motion.h2>
+
+          {/* ── Float container: photo right, bio wraps around ── */}
+          <div className="after:content-[''] after:block after:clear-both">
+
+            {/* Photo — floats right on md+, centered block on mobile */}
             <motion.div
-              initial={{ opacity: 0, x: -12 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5 }}
-              className="mb-6"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
+              className="mx-auto mb-6 block md:float-right md:ml-10 md:mb-4 md:mt-1 md:mx-0 w-fit"
             >
-              <SectionLabel index={1} animate={false}>
-                sobre mim
-              </SectionLabel>
+              <div className="relative w-[200px] h-[200px] md:w-[240px] md:h-[240px] rounded-full overflow-hidden ring-1 ring-white/10">
+                <Image
+                  src="/avatar.jpg"
+                  alt="João Gabriel Nascimento — Desenvolvedor Full-Stack"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 768px) 200px, 240px"
+                  priority
+                />
+                {/* Subtle bottom vignette */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none rounded-b-full"
+                  style={{
+                    background: "linear-gradient(to bottom, transparent, rgba(10,10,10,0.3))",
+                  }}
+                />
+              </div>
             </motion.div>
 
-            <motion.h2
-              custom={0.08}
-              variants={textVariants}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-              className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-8 leading-[1.1]"
-            >
-              Desenvolvedor focado em{" "}
-              <em className="italic text-accent">qualidade</em>
-              <br />e clareza de código.
-            </motion.h2>
-
+            {/* Bio paragraphs — flow around photo */}
             <div className="space-y-5">
               {[
                 {
@@ -146,14 +192,14 @@ export function About() {
                   variants={textVariants}
                   initial="hidden"
                   animate={isInView ? "visible" : "hidden"}
-                  className="font-sans text-muted leading-relaxed text-base"
+                  className="font-sans text-muted text-lg leading-[1.9]"
                 >
                   {text}
                 </motion.p>
               ))}
             </div>
 
-            {/* Divider + quick facts row */}
+            {/* Quick facts — also flows around photo */}
             <motion.div
               custom={0.34}
               variants={textVariants}
@@ -161,74 +207,41 @@ export function About() {
               animate={isInView ? "visible" : "hidden"}
               className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 pt-6 border-t border-border"
             >
-              {[
-                { icon: "📍", text: "Porto Alegre, RS" },
-                { icon: "🎓", text: "Aberto a oportunidades" },
-                { icon: "⚡", text: "Resposta em 24h" },
-              ].map(({ icon, text }) => (
+              {QUICK_FACTS.map(({ Icon, text }) => (
                 <span
                   key={text}
                   className="font-mono text-[11px] text-muted flex items-center gap-2"
                 >
-                  <span>{icon}</span>
+                  <Icon size={13} strokeWidth={1.5} className="text-accent/60 shrink-0" />
                   {text}
                 </span>
               ))}
             </motion.div>
           </div>
 
-          {/* ── Right: photo + metrics ── */}
-          <div className="flex flex-col gap-6">
-            {/* Profile photo */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
-              className="relative"
-            >
-              {/* Decorative frame */}
-              <div className="relative w-full aspect-square max-w-[280px] mx-auto lg:mx-0">
-                {/* Offset border accent */}
-                <div
-                  className="absolute inset-0 rounded-sm border border-accent/20"
-                  style={{ transform: "translate(6px, 6px)" }}
-                />
-                {/* Photo container */}
-                <div className="relative w-full h-full rounded-sm overflow-hidden border border-border/60 bg-surface">
-                  <Image
-                    src="/avatar.jpg"
-                    alt="João Gabriel Nascimento — Desenvolvedor Full-Stack"
-                    fill
-                    className="object-cover object-top"
-                    sizes="(max-width: 1024px) 280px, 280px"
-                    priority
-                  />
-                  {/* Subtle gradient overlay at bottom */}
-                  <div
-                    className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
-                    style={{
-                      background:
-                        "linear-gradient(to bottom, transparent, rgba(10,10,10,0.4))",
-                    }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* 2×2 metrics grid */}
-            <div className="grid grid-cols-2 gap-3">
+          {/* ── Metrics grid — below float ── */}
+          <motion.div
+            custom={0.42}
+            variants={textVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            className="mt-8 clear-both"
+          >
+            <div className="grid grid-cols-2 sm:grid-cols-4">
               {METRICS.map(({ value, label }, i) => (
                 <Metric
                   key={label}
                   value={value}
                   label={label}
-                  delay={0.18 + i * 0.08}
+                  delay={0.44 + i * 0.06}
                   isInView={isInView}
+                  borderRight={i < METRICS.length - 1}
+                  borderBottom={false}
                 />
               ))}
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </Parallax3DLayer>
       </div>
     </section>
   );

@@ -2,6 +2,7 @@
 
 import { MotionConfig } from "framer-motion";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import { Mouse3DProvider } from "@/components/providers/Mouse3DProvider";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -10,8 +11,10 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <MotionConfig reducedMotion="user">
-      <CustomCursor />
-      {children}
+      <Mouse3DProvider>
+        <CustomCursor />
+        {children}
+      </Mouse3DProvider>
     </MotionConfig>
   );
 }
