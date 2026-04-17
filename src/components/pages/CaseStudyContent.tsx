@@ -47,7 +47,7 @@ function PlayIcon() {
   );
 }
 
-// ─── Routing Diagram ─────────────────────────────────────────
+// ─── Routing Diagram (FortunAI) ──────────────────────────────
 function RoutingDiagram() {
   const outputs = [
     { label: "Local", sub: "CatalogoAtivoService", note: "zero custo de API", color: "text-[#7ac97a] border-[#7ac97a]/30 bg-[#7ac97a]/5" },
@@ -62,26 +62,20 @@ function RoutingDiagram() {
         <p className="font-mono text-[10px] text-muted uppercase tracking-widest mb-1">input</p>
         <p className="font-sans text-sm text-foreground/80">Mensagem do usuário</p>
       </div>
-
-      {/* Arrow */}
       <div className="sm:mx-4 flex sm:flex-row flex-col items-center gap-1 text-muted shrink-0">
         <span className="hidden sm:block text-muted/60 text-xl leading-none">→</span>
         <span className="block sm:hidden text-muted/60 text-xl leading-none">↓</span>
       </div>
-
       {/* Router node */}
       <div className="shrink-0 px-4 py-3 border-2 border-accent/40 bg-accent/5 rounded-sm text-center min-w-[140px]">
         <p className="font-mono text-[10px] text-accent/70 uppercase tracking-widest mb-1">roteador</p>
         <p className="font-sans text-sm text-accent font-medium">Classificação inteligente</p>
         <p className="font-mono text-[9px] text-muted mt-1">3 níveis de roteamento</p>
       </div>
-
-      {/* Arrow */}
       <div className="sm:mx-4 flex items-center text-muted shrink-0">
         <span className="hidden sm:block text-muted/60 text-xl leading-none">→</span>
         <span className="block sm:hidden text-muted/60 text-xl leading-none">↓</span>
       </div>
-
       {/* Output nodes */}
       <div className="flex flex-col gap-2 shrink-0">
         {outputs.map((o) => (
@@ -93,6 +87,80 @@ function RoutingDiagram() {
       </div>
     </div>
   );
+}
+
+// ─── Delivery Diagram (NotifyFlow) ───────────────────────────
+function DeliveryDiagram() {
+  const pipeline = [
+    { id: "api",      label: "API",        sub: "POST /notifications", cls: "border-border" },
+    { id: "pg",       label: "PostgreSQL", sub: "Outbox · PENDING",    cls: "border-accent/40 bg-accent/5 text-accent" },
+    { id: "sched",    label: "Scheduler",  sub: "polling 5s",          cls: "border-border" },
+    { id: "rmq",      label: "RabbitMQ",   sub: "exchange principal",  cls: "text-[#7a9dc9] border-[#7a9dc9]/30 bg-[#7a9dc9]/5" },
+    { id: "consumer", label: "Consumer",   sub: "fallback engine",     cls: "border-border" },
+  ];
+
+  const channels = [
+    { id: "email", label: "EMAIL", sub: "SendGrid",          cls: "text-[#7ac97a] border-[#7ac97a]/30 bg-[#7ac97a]/5", last: false },
+    { id: "sms",   label: "SMS",   sub: "Twilio",            cls: "text-[#7a9dc9] border-[#7a9dc9]/30 bg-[#7a9dc9]/5", last: false },
+    { id: "push",  label: "PUSH",  sub: "Firebase",          cls: "text-accent border-accent/30 bg-accent/5",           last: false },
+    { id: "dlq",   label: "DLQ",   sub: "falhas definitivas", cls: "text-red-400/80 border-red-400/25 bg-red-400/5",   last: true  },
+  ];
+
+  return (
+    <div className="p-6 bg-surface border border-border rounded-sm space-y-5">
+      {/* Pipeline horizontal */}
+      <div className="overflow-x-auto pb-1">
+        <div className="flex items-center gap-2 min-w-max">
+          {pipeline.map((node, i) => (
+            <div key={node.id} className="flex items-center gap-2">
+              <div className={`shrink-0 px-3 py-2.5 border rounded-sm text-center min-w-[100px] bg-surface ${node.cls}`}>
+                <p className="font-mono text-[11px] font-medium leading-none">{node.label}</p>
+                <p className="font-mono text-[9px] text-muted/70 mt-1">{node.sub}</p>
+              </div>
+              {i < pipeline.length - 1 && (
+                <span className="text-muted/50 text-lg shrink-0 leading-none">→</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Fallback chain vertical */}
+      <div className="pt-4 border-t border-border">
+        <p className="font-mono text-[10px] text-muted/50 uppercase tracking-widest mb-3">
+          fallback automático — Consumer tenta em sequência
+        </p>
+        <div className="flex flex-col gap-0 ml-4">
+          {channels.map((ch) => (
+            <div key={ch.id}>
+              <div className={`px-3 py-2 border rounded-sm w-fit min-w-[180px] ${ch.cls}`}>
+                <p className="font-mono text-[11px] font-medium">{ch.label}</p>
+                <p className="font-mono text-[9px] text-muted/70 mt-0.5">{ch.sub}</p>
+              </div>
+              {!ch.last && (
+                <div className="flex items-center gap-2 ml-3 my-1.5">
+                  <span className="text-muted/40 text-sm leading-none">↓</span>
+                  <span className="font-mono text-[9px] text-muted/35">falhou?</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Problem Diagram selector ─────────────────────────────────
+function ProblemDiagram({ projectId }: { projectId: string }) {
+  if (projectId === "notifyflow") return <DeliveryDiagram />;
+  return <RoutingDiagram />;
+}
+
+// ─── Diagram label per project ────────────────────────────────
+function diagramLabel(projectId: string): string {
+  if (projectId === "notifyflow") return "Fluxo de entrega com fallback";
+  return "Fluxo de roteamento";
 }
 
 // ─── Component ───────────────────────────────────────────────
@@ -217,7 +285,7 @@ export function CaseStudyContent({ project }: Props) {
             {/* Problem text */}
             <div>
               <motion.h2 {...fadeUp(0.05)} className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6">
-                Por que o FortunAI existe
+                Por que o {project.title} existe
               </motion.h2>
               <motion.p {...fadeUp(0.08)} className="font-sans text-base text-muted/90 leading-loose">
                 {cs.problem}
@@ -227,9 +295,9 @@ export function CaseStudyContent({ project }: Props) {
             {/* Routing diagram */}
             <motion.div {...fadeUp(0.1)}>
               <p className="font-mono text-[11px] text-muted/60 uppercase tracking-widest mb-4">
-                Fluxo de roteamento
+                {diagramLabel(project.id)}
               </p>
-              <RoutingDiagram />
+              <ProblemDiagram projectId={project.id} />
             </motion.div>
           </div>
         </div>
