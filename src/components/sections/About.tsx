@@ -52,10 +52,10 @@ function Metric({ value, label, delay, isInView, borderRight, borderBottom }: Me
 
 // ─── About data ───────────────────────────────────────────────
 const METRICS = [
-  { value: "3+",   label: "Anos de\nexperiência" },
+  { value: "4",    label: "Anos de\nexperiência" },
   { value: "2",    label: "Empresas\nno currículo" },
   { value: "10+",  label: "Tecnologias\nno dia a dia" },
-  { value: "2026", label: "Formação\nSistemas de Info." },
+  { value: "2025", label: "Formação\nSistemas de Info." },
 ];
 
 const QUICK_FACTS = [
@@ -178,8 +178,8 @@ export function About() {
                   delay: 0.26,
                   text: (
                     <>
-                      Cursando <Kw>Sistemas de Informação</Kw> na Unisinos
-                      (conclusão em 2026), busco oportunidades para aplicar
+                      Bacharel em <Kw>Sistemas de Informação</Kw> pela Unisinos
+                      (2025), busco oportunidades para aplicar
                       conhecimento <Kw>full-stack</Kw> em projetos desafiadores
                       e com impacto real.
                     </>
