@@ -7,24 +7,23 @@ import { projects, type Project } from "@/data/projects";
 import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
 
 // ─── Layout logic ─────────────────────────────────────────────
-// Row 1: featured[0] (8/12) + others[0] (4/12)
-// Row 2: featured[1] (6/12) + others[1] (6/12)
-// Extras: full-width featured | half-width others
-function buildLayout(items: Project[]): Array<Project & { colSpan: string }> {
-  const featured = items.filter((p) => p.featured);
-  const others = items.filter((p) => !p.featured);
+// Row 1: [0] FortunAI   (8/12) + [1] NotifyFlow    (4/12)
+// Row 2: [2] AuditVault (6/12) + [3] ContractGuard (6/12)
+// Row 3: [4] RoutineFlow (12/12 — full-width banner)
+// Extras além de 5: 6/12
+const COL_SPANS: string[] = [
+  "col-span-full lg:col-span-8",
+  "col-span-full lg:col-span-4",
+  "col-span-full lg:col-span-6",
+  "col-span-full lg:col-span-6",
+  "col-span-full",
+];
 
-  return [
-    // Row 1 — hero featured + compact non-featured
-    ...(featured[0] ? [{ ...featured[0], colSpan: "col-span-full lg:col-span-8" }] : []),
-    ...(others[0]   ? [{ ...others[0],   colSpan: "col-span-full lg:col-span-4" }] : []),
-    // Row 2 — second featured + second non-featured, equal halves
-    ...(featured[1] ? [{ ...featured[1], colSpan: "col-span-full lg:col-span-6" }] : []),
-    ...(others[1]   ? [{ ...others[1],   colSpan: "col-span-full lg:col-span-6" }] : []),
-    // Overflow — full-width featured, half-width others
-    ...featured.slice(2).map((p) => ({ ...p, colSpan: "col-span-full" })),
-    ...others.slice(2).map((p) => ({ ...p, colSpan: "col-span-full lg:col-span-6" })),
-  ];
+function buildLayout(items: Project[]): Array<Project & { colSpan: string }> {
+  return items.map((p, i) => ({
+    ...p,
+    colSpan: COL_SPANS[i] ?? "col-span-full lg:col-span-6",
+  }));
 }
 
 export function Projects() {
@@ -57,7 +56,7 @@ export function Projects() {
                 i % 2 === 1 ? "lg:[&>article]:bg-[#0f0f0f]" : ""
               }`}
             >
-              <ProjectCard project={project} index={projects.indexOf(project)} />
+              <ProjectCard project={project} index={projects.findIndex((p) => p.id === project.id)} />
             </div>
           ))}
         </div>
