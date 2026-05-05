@@ -166,6 +166,276 @@ img, svg, video {
   );
 }
 
+/* ─── Blog MDX prose styles ──────────────────────────────────── */
+.prose-blog {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  color: var(--muted);
+  line-height: 1.85;
+  font-size: 1rem;
+}
+
+.prose-blog > * + * {
+  margin-top: 1.5em;
+}
+
+.prose-blog h2 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-top: 2.5em;
+  margin-bottom: 0.75em;
+  line-height: 1.2;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--accent);
+}
+
+.prose-blog h3 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  line-height: 1.3;
+}
+
+.prose-blog p {
+  margin-bottom: 1.25em;
+  color: var(--muted);
+}
+
+.prose-blog a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.prose-blog a:hover {
+  color: var(--foreground);
+  text-decoration-color: var(--foreground);
+}
+
+.prose-blog strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.prose-blog em {
+  font-style: italic;
+  color: color-mix(in srgb, var(--foreground) 80%, var(--accent));
+}
+
+/* Inline code */
+.prose-blog :not(pre) > code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85em;
+  padding: 0.2em 0.45em;
+  border-radius: 3px;
+  background-color: var(--surface-2);
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+/* Code blocks */
+.prose-blog pre {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  margin: 1.75em 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 4px;
+  background-color: #0d0d0d;
+  border: 1px solid var(--border);
+  color: #d4cebc;
+}
+
+.prose-blog pre code {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* Blockquote */
+.prose-blog blockquote {
+  border-left: 2px solid var(--accent);
+  padding: 0.75rem 1.25rem;
+  margin: 1.75em 0;
+  background-color: color-mix(in srgb, var(--accent) 4%, transparent);
+  border-radius: 0 4px 4px 0;
+  color: color-mix(in srgb, var(--foreground) 70%, transparent);
+  font-style: italic;
+}
+
+.prose-blog blockquote > * + * {
+  margin-top: 0.75em;
+}
+
+/* Lists */
+.prose-blog ul,
+.prose-blog ol {
+  padding-left: 1.5rem;
+  margin: 1.25em 0;
+}
+
+.prose-blog ul {
+  list-style-type: none;
+}
+
+.prose-blog ul li {
+  position: relative;
+  padding-left: 0.25rem;
+  margin-bottom: 0.4em;
+}
+
+.prose-blog ul li::before {
+  content: "—";
+  position: absolute;
+  left: -1.25rem;
+  color: var(--accent);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75em;
+  top: 0.2em;
+}
+
+.prose-blog ol {
+  list-style-type: decimal;
+}
+
+.prose-blog ol li {
+  margin-bottom: 0.4em;
+  padding-left: 0.25rem;
+}
+
+.prose-blog ol li::marker {
+  color: var(--accent);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85em;
+}
+
+/* Horizontal rule */
+.prose-blog hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5em 0;
+}
+
+/* Tables (from remark-gfm) */
+.prose-blog table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin: 1.75em 0;
+}
+
+.prose-blog thead {
+  border-bottom: 1px solid var(--border);
+}
+
+.prose-blog th {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+}
+
+.prose-blog td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  vertical-align: top;
+}
+
+.prose-blog tr:last-child td {
+  border-bottom: none;
+}
+
+/* ─── Syntax highlighting (rehype-highlight / hljs) ─────────── */
+/* Base container */
+.prose-blog .hljs {
+  background: transparent;
+  color: #d4cebc;
+}
+
+/* Keywords: return, class, import, public, void… */
+.prose-blog .hljs-keyword,
+.prose-blog .hljs-selector-tag,
+.prose-blog .hljs-tag {
+  color: #c9b97a; /* accent gold */
+}
+
+/* Strings */
+.prose-blog .hljs-string,
+.prose-blog .hljs-attr,
+.prose-blog .hljs-attribute {
+  color: #a8c99a;
+}
+
+/* Numbers and booleans */
+.prose-blog .hljs-number,
+.prose-blog .hljs-literal {
+  color: #7ac9b9;
+}
+
+/* Comments */
+.prose-blog .hljs-comment,
+.prose-blog .hljs-doctag {
+  color: #5a5a5a;
+  font-style: italic;
+}
+
+/* Types, classes */
+.prose-blog .hljs-type,
+.prose-blog .hljs-class .hljs-title,
+.prose-blog .hljs-title.class_ {
+  color: #7a9dc9;
+}
+
+/* Function / method names */
+.prose-blog .hljs-function .hljs-title,
+.prose-blog .hljs-title.function_ {
+  color: #d4b8e0;
+}
+
+/* Built-ins (System.out, etc.) */
+.prose-blog .hljs-built_in,
+.prose-blog .hljs-class {
+  color: #c4b08a;
+}
+
+/* Variables, params */
+.prose-blog .hljs-variable,
+.prose-blog .hljs-params {
+  color: #d4cebc;
+}
+
+/* Annotations (@Transactional, @Component…) */
+.prose-blog .hljs-meta,
+.prose-blog .hljs-meta .hljs-string {
+  color: #a8b8c9;
+}
+
+/* SQL specific */
+.prose-blog .hljs-operator {
+  color: #c9b97a;
+}
+
+/* Symbols / punctuation */
+.prose-blog .hljs-symbol,
+.prose-blog .hljs-bullet,
+.prose-blog .hljs-punctuation {
+  color: #7a7a7a;
+}
+
 /* ─── Reduced motion: disable native CSS animations ─────────── */
 @media (prefers-reduced-motion: reduce) {
   .animate-float {

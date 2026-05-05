@@ -1,17 +1,24 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ─── Nav links ────────────────────────────────────────────────
+// href starting with "#" → section link (smooth scroll on home, /#hash on other pages)
+// href starting with "/"  → page link  (Next.js Link)
 const NAV_LINKS = [
   { label: "Sobre",        href: "#about" },
   { label: "Skills",       href: "#skills" },
   { label: "Certificados", href: "#certificates" },
+  { label: "Blog",         href: "/blog" },
   { label: "Projetos",     href: "#projects" },
   { label: "Experiência",  href: "#experience" },
   { label: "Contato",      href: "#contact" },
 ] as const;
+
+type NavHref = (typeof NAV_LINKS)[number]["href"];
 
 const SECTION_IDS = ["hero", "about", "skills", "certificates", "projects", "experience", "contact"];
 
@@ -40,32 +47,37 @@ function HamburgerIcon({ open }: { open: boolean }) {
 
 // ─── Navbar ───────────────────────────────────────────────────
 export function Navbar() {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [menuOpen, setMenuOpen] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Scroll detection for backdrop + bottom-of-page active fix
+  // Scroll detection — only meaningful on home page, harmless elsewhere
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
-      // When near the bottom, force "contact" active (last section never fills the observer band)
-      const nearBottom =
-        window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
-      if (nearBottom) setActiveSection("contact");
+      // When near bottom of home page, force "contact" active
+      if (isHomePage) {
+        const nearBottom =
+          window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
+        if (nearBottom) setActiveSection("contact");
+      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomePage]);
 
-  // Active section via IntersectionObserver
+  // Active section via IntersectionObserver (home page only)
   useEffect(() => {
+    if (!isHomePage) return;
+
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
         });
       },
       { rootMargin: "-30% 0px -65% 0px" }
@@ -77,7 +89,7 @@ export function Navbar() {
     });
 
     return () => observerRef.current?.disconnect();
-  }, []);
+  }, [isHomePage]);
 
   // Close mobile menu on ESC
   useEffect(() => {
@@ -94,13 +106,94 @@ export function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
-  const handleNavClick = (href: string) => {
+  // Smooth-scroll handler (home page section links only)
+  const handleSectionClick = (href: string) => {
     setMenuOpen(false);
-    // Give drawer time to close before scrolling
     setTimeout(() => {
       document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
     }, 50);
   };
+
+  // Derive active state per link
+  function isActive(href: NavHref): boolean {
+    if (href.startsWith("/")) {
+      // Page link: active when pathname starts with href
+      return pathname.startsWith(href);
+    }
+    // Section link: active via IntersectionObserver (home only)
+    return isHomePage && activeSection === href.slice(1);
+  }
+
+  // Render a single nav item — shared between desktop and mobile
+  function NavItem({
+    label,
+    href,
+    mobile = false,
+    index = 0,
+  }: {
+    label: string;
+    href: NavHref;
+    mobile?: boolean;
+    index?: number;
+  }) {
+    const active = isActive(href);
+    const isPageLink = href.startsWith("/");
+
+    const cls = [
+      "relative font-sans transition-colors duration-200",
+      mobile ? "flex items-center gap-3 py-3 text-base w-full" : "text-sm",
+      active ? "text-accent" : "text-muted hover:text-foreground",
+    ].join(" ");
+
+    const activeIndicator = active ? (
+      mobile ? (
+        <span className="w-1 h-1 rounded-full bg-accent shrink-0" />
+      ) : (
+        <motion.span
+          layoutId="nav-underline"
+          className="absolute -bottom-0.5 left-0 right-0 h-px bg-accent"
+          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+        />
+      )
+    ) : null;
+
+    if (isPageLink) {
+      return (
+        <Link
+          href={href}
+          className={cls}
+          aria-current={active ? "page" : undefined}
+          onClick={() => setMenuOpen(false)}
+        >
+          {mobile && activeIndicator}
+          {label}
+          {!mobile && activeIndicator}
+        </Link>
+      );
+    }
+
+    // Section link: smooth-scroll on home, hash-navigate on other pages
+    const anchorHref = isHomePage ? href : `/${href}`;
+    const handleClick = isHomePage
+      ? (e: React.MouseEvent<HTMLAnchorElement>) => {
+          e.preventDefault();
+          handleSectionClick(href);
+        }
+      : () => setMenuOpen(false);
+
+    return (
+      <a
+        href={anchorHref}
+        onClick={handleClick}
+        className={cls}
+        aria-current={active ? "page" : undefined}
+      >
+        {mobile && activeIndicator}
+        {label}
+        {!mobile && activeIndicator}
+      </a>
+    );
+  }
 
   return (
     <>
@@ -118,43 +211,32 @@ export function Navbar() {
           aria-label="Navegação principal"
         >
           {/* Logo */}
-          <a
-            href="#hero"
-            onClick={(e) => { e.preventDefault(); handleNavClick("#hero"); }}
-            className="font-mono text-sm text-foreground/80 hover:text-accent transition-colors duration-200"
-            aria-label="Início"
-          >
-            {"< dev />"}
-          </a>
+          {isHomePage ? (
+            <a
+              href="#hero"
+              onClick={(e) => { e.preventDefault(); handleSectionClick("#hero"); }}
+              className="font-mono text-sm text-foreground/80 hover:text-accent transition-colors duration-200"
+              aria-label="Início"
+            >
+              {"< dev />"}
+            </a>
+          ) : (
+            <Link
+              href="/"
+              className="font-mono text-sm text-foreground/80 hover:text-accent transition-colors duration-200"
+              aria-label="Início"
+            >
+              {"< dev />"}
+            </Link>
+          )}
 
           {/* Desktop links */}
           <ul className="hidden md:flex items-center gap-7" role="list">
-            {NAV_LINKS.map(({ label, href }) => {
-              const sectionId = href.slice(1);
-              const isActive = activeSection === sectionId;
-              return (
-                <li key={href}>
-                  <a
-                    href={href}
-                    onClick={(e) => { e.preventDefault(); handleNavClick(href); }}
-                    className={[
-                      "relative font-sans text-sm transition-colors duration-200",
-                      isActive ? "text-accent" : "text-muted hover:text-foreground",
-                    ].join(" ")}
-                    aria-current={isActive ? "page" : undefined}
-                  >
-                    {label}
-                    {isActive && (
-                      <motion.span
-                        layoutId="nav-underline"
-                        className="absolute -bottom-0.5 left-0 right-0 h-px bg-accent"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </a>
-                </li>
-              );
-            })}
+            {NAV_LINKS.map(({ label, href }) => (
+              <li key={href}>
+                <NavItem label={label} href={href} />
+              </li>
+            ))}
           </ul>
 
           {/* Mobile hamburger */}
@@ -197,33 +279,16 @@ export function Navbar() {
               className="fixed top-0 left-0 bottom-0 z-[99] w-72 bg-surface border-r border-border flex flex-col pt-20 pb-8 px-6 md:hidden"
             >
               <ul className="space-y-1" role="list">
-                {NAV_LINKS.map(({ label, href }, i) => {
-                  const sectionId = href.slice(1);
-                  const isActive = activeSection === sectionId;
-                  return (
-                    <motion.li
-                      key={href}
-                      initial={{ opacity: 0, x: -16 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 + 0.1 }}
-                    >
-                      <a
-                        href={href}
-                        onClick={(e) => { e.preventDefault(); handleNavClick(href); }}
-                        className={[
-                          "flex items-center gap-3 py-3 font-sans text-base transition-colors duration-200",
-                          isActive ? "text-accent" : "text-muted hover:text-foreground",
-                        ].join(" ")}
-                        aria-current={isActive ? "page" : undefined}
-                      >
-                        {isActive && (
-                          <span className="w-1 h-1 rounded-full bg-accent shrink-0" />
-                        )}
-                        {label}
-                      </a>
-                    </motion.li>
-                  );
-                })}
+                {NAV_LINKS.map(({ label, href }, i) => (
+                  <motion.li
+                    key={href}
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 + 0.1 }}
+                  >
+                    <NavItem label={label} href={href} mobile index={i} />
+                  </motion.li>
+                ))}
               </ul>
 
               {/* Drawer footer */}

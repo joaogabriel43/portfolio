@@ -1,0 +1,235 @@
+---
+title: "Outbox Pattern: garantindo consistência em sistemas distribuídos"
+description: "Como o padrão Transactional Outbox resolve o problema de dual write entre banco de dados e message broker, com implementação prática em Spring Boot e RabbitMQ."
+date: "2026-05-05"
+tags: ["Java", "Spring Boot", "RabbitMQ", "Arquitetura", "Mensageria"]
+featured: true
+---
+
+## O problema do dual write
+
+Imagine o seguinte cenário: um usuário aciona uma notificação. Você precisa salvar o registro no banco de dados *e* publicar um evento `NotificacaoCriada` no RabbitMQ para que os canais de entrega (email, SMS, push) sejam acionados. Duas operações simples — exceto pelo fato de que elas nunca são atomicamente garantidas.
+
+```java
+// ⚠️ Código perigoso — não faça isso
+@Transactional
+public void createNotification(NotificationRequest request) {
+    Notification notification = notificationRepo.save(Notification.from(request));
+    rabbitTemplate.convertAndSend("notifications.exchange", "created", notification); // ← bomba-relógio
+}
+```
+
+E se o banco aceitar o commit, mas o RabbitMQ estiver temporariamente indisponível? Você terá uma notificação persistida que nunca será entregue. Pior: e se o broker receber a mensagem, mas o commit do banco falhar em seguida? Você disparou um evento para um registro que não existe.
+
+Esse é o **dual write problem** — o inimigo silencioso de qualquer sistema distribuído que não foi projetado explicitamente para falha parcial.
+
+## Por que notificações são especialmente vulneráveis
+
+No NotifyFlow, o problema era amplificado. O sistema precisava:
+
+1. Persistir o registro da notificação com metadados (canal, destinatário, template)
+2. Publicar um evento de roteamento para o worker correto (email via SMTP, SMS via Twilio, push via FCM)
+3. Garantir entrega **pelo menos uma vez** em todos os canais, mesmo com falhas de infraestrutura
+
+Com throughput de até 50.000 notificações por hora em picos de carga, qualquer perda silenciosa de evento era inaceitável. Mas publicar no broker dentro de uma transação de banco de dados era uma bomba-relógio esperando explodir.
+
+## A solução: Transactional Outbox
+
+O padrão **Transactional Outbox** resolve o dual write de forma elegante e sem exigir coordenação distribuída: em vez de publicar no broker diretamente, você escreve o evento em uma tabela especial (`outbox`) dentro da *mesma transação* do banco de dados. Um processo separado — o **message relay** — lê essa tabela periodicamente e publica as mensagens.
+
+```
+┌────────────────────────────────┐
+│       Transação do Banco       │
+│                                │
+│  ┌────────────────────────┐    │
+│  │  INSERT notifications  │    │
+│  └────────────────────────┘    │
+│  ┌────────────────────────┐    │
+│  │  INSERT outbox         │    │
+│  └────────────────────────┘    │
+└────────────────────────────────┘
+           ↓  commit atômico
+┌──────────────────────────────────────────┐
+│           Message Relay (agendado)       │
+│  SELECT status = PENDING FROM outbox     │
+│  → convertAndSend(RabbitMQ)              │
+│  → UPDATE status = PROCESSED            │
+└──────────────────────────────────────────┘
+```
+
+A atomicidade é garantida pelo próprio banco de dados. O relay pode falhar e retomar sem perder nada. Os consumidores implementam idempotência para lidar com reentregas eventuais.
+
+## Implementação no NotifyFlow com Spring Boot
+
+### 1. A tabela outbox
+
+```sql
+CREATE TABLE notification_outbox (
+    id            UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
+    aggregate     VARCHAR(100) NOT NULL,
+    payload       JSONB        NOT NULL,
+    status        VARCHAR(20)  NOT NULL DEFAULT 'PENDING',
+    created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    processed_at  TIMESTAMPTZ
+);
+
+-- Índice parcial: em produção, 99% dos registros já estão PROCESSED
+CREATE INDEX idx_outbox_pending
+    ON notification_outbox (status, created_at)
+    WHERE status = 'PENDING';
+```
+
+O índice parcial é fundamental em produção. Sem ele, o relay faria varredura completa na tabela mesmo com bilhões de registros já processados.
+
+### 2. Persistindo dentro da mesma transação
+
+```java
+@Service
+@RequiredArgsConstructor
+public class NotificationService {
+
+    private final NotificationRepository notificationRepo;
+    private final OutboxRepository outboxRepo;
+    private final ObjectMapper objectMapper;
+
+    @Transactional
+    public Notification create(CreateNotificationRequest request) {
+        // Passo 1: persiste a notificação
+        Notification notification = notificationRepo.save(Notification.from(request));
+
+        // Passo 2: persiste o evento na mesma transação
+        OutboxMessage outbox = OutboxMessage.builder()
+            .aggregate("Notification")
+            .payload(objectMapper.valueToTree(
+                NotificationCreatedEvent.from(notification)
+            ))
+            .status(OutboxStatus.PENDING)
+            .build();
+        outboxRepo.save(outbox);
+
+        return notification;
+    }
+}
+```
+
+O detalhe crítico: **ambos os saves ocorrem dentro de `@Transactional`**. O Spring garante que, se qualquer operação falhar, ambas serão revertidas. O banco nunca terá uma notificação sem o registro correspondente no outbox — e vice-versa.
+
+### 3. O Message Relay
+
+```java
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class OutboxMessageRelay {
+
+    private final OutboxRepository outboxRepo;
+    private final RabbitTemplate rabbitTemplate;
+    private final ObjectMapper objectMapper;
+
+    @Scheduled(fixedDelay = 1000) // executa a cada segundo
+    @Transactional
+    public void relay() {
+        List<OutboxMessage> pending = outboxRepo
+            .findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
+
+        for (OutboxMessage message : pending) {
+            try {
+                rabbitTemplate.convertAndSend(
+                    "notifications.exchange",
+                    "notification.created",
+                    objectMapper.writeValueAsString(message.getPayload())
+                );
+                message.markAsProcessed();
+                outboxRepo.save(message);
+            } catch (Exception e) {
+                log.error("Falha ao publicar mensagem {}: {}", message.getId(), e.getMessage());
+                // Mensagem permanece PENDING — reprocessada no próximo ciclo
+            }
+        }
+    }
+}
+```
+
+O relay processa no máximo 50 mensagens por ciclo. Se o RabbitMQ estiver indisponível, a mensagem permanece `PENDING` e será tentada novamente em 1 segundo. Sem estado distribuído, sem complexidade adicional.
+
+### 4. Idempotência no consumidor
+
+Como o relay pode entregar a mesma mensagem mais de uma vez (semântica *at-least-once*), os consumidores precisam ser idempotentes. No NotifyFlow, isso foi resolvido com uma tabela de deduplicação:
+
+```java
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class NotificationConsumer {
+
+    private final ProcessedMessageRepository processedRepo;
+    private final NotificationDispatcher dispatcher;
+
+    @RabbitListener(queues = "notifications.created")
+    @Transactional
+    public void handle(String rawMessage) {
+        NotificationCreatedEvent event = deserialize(rawMessage);
+
+        // Ignora duplicata se já foi processada
+        if (processedRepo.existsById(event.getNotificationId())) {
+            log.debug("Mensagem duplicada ignorada: {}", event.getNotificationId());
+            return;
+        }
+
+        dispatcher.dispatch(event);
+        processedRepo.save(new ProcessedMessage(event.getNotificationId()));
+    }
+}
+```
+
+A combinação Outbox + idempotência entrega semântica **exactly-once** do ponto de vista do negócio, mesmo sobre infraestrutura não confiável.
+
+## Circuit Breaker: protegendo o relay
+
+Com Resilience4j, adicionamos um Circuit Breaker no relay para evitar que falhas repetidas do broker degradem o sistema inteiro:
+
+```java
+@CircuitBreaker(name = "outbox-relay", fallbackMethod = "relayFallback")
+public void publishToRabbit(OutboxMessage message) throws JsonProcessingException {
+    rabbitTemplate.convertAndSend(
+        "notifications.exchange",
+        "notification.created",
+        objectMapper.writeValueAsString(message.getPayload())
+    );
+}
+
+private void relayFallback(OutboxMessage message, Exception ex) {
+    log.warn("Circuit breaker aberto — mensagem {} permanece PENDING", message.getId());
+    // Não faz nada: o circuito abre, aguarda recuperação automática
+}
+```
+
+Quando o broker fica indisponível por mais de N requisições consecutivas, o circuito abre e para de tentar imediatamente. Isso preserva threads e evita cascata de falhas enquanto o sistema aguarda a recuperação.
+
+## Trade-offs e quando usar
+
+O Outbox Pattern não é gratuito. Você está fazendo uma troca consciente:
+
+| Ganho | Custo |
+|---|---|
+| Consistência entre DB e broker | Uma tabela extra no banco |
+| Zero dual write | Latência adicional (até 1s nesta impl.) |
+| Tolerância a falhas do broker | Necessidade de limpeza periódica da tabela |
+| Auditoria nativa de eventos | Idempotência obrigatória no consumidor |
+
+A latência de até 1 segundo é aceitável para notificações assíncronas. Para sistemas com requisito de latência sub-100ms, o padrão pode ser otimizado com **CDC (Change Data Capture)** via Debezium — que elimina o polling e reage a mudanças no WAL do PostgreSQL em tempo real.
+
+## Resultado no NotifyFlow
+
+Após a implementação do padrão:
+
+- **Zero mensagens perdidas** em 3 semanas de testes de carga intensiva
+- **Entrega garantida** mesmo com reinicializações do RabbitMQ durante o processo
+- **Throughput sustentado** de 50.000 notificações/hora sem degradação
+- **Observabilidade nativa**: a tabela `outbox` funciona como log de auditoria em tempo real, permitindo diagnosticar atrasos e falhas sem ferramentas adicionais
+
+O padrão transformou o que seria um problema insidioso — difícil de reproduzir, difícil de debugar — em uma propriedade **explícita, verificável e monitorável** do sistema.
+
+---
+
+Se você está construindo qualquer sistema que precise de consistência entre um banco de dados relacional e um message broker — seja para notificações, pagamentos, auditoria ou qualquer outro domínio crítico — o Transactional Outbox é um dos padrões mais valiosos do seu repertório de engenharia.
