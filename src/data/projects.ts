@@ -691,4 +691,131 @@ export const projects: Project[] = [
       ],
     },
   },
+  {
+    id: "postmortem-ai",
+    title: "PostMortem AI",
+    description:
+      "Gerador inteligente de post-mortems de incidentes a partir de logs e stack traces — do caos ao documento estruturado em segundos.",
+    longDescription:
+      "Após um incidente em produção, o time precisa escrever um post-mortem estruturado de memória, dias depois, consumindo horas. PostMortem AI automatiza: cola os logs e stack traces e o sistema gera o documento completo no formato padrão da indústria, com timeline, causa raiz, impacto e ações corretivas.",
+    stack: [
+      "Java 21",
+      "Spring Boot 3.2",
+      "Angular 17",
+      "PostgreSQL",
+      "OpenAI API",
+      "Resilience4j",
+      "Docker",
+      "Render",
+      "Vercel",
+    ],
+    githubUrl: "https://github.com/joaogabriel43/postmortem-ai",
+    liveUrl: "https://postmortem-ai.vercel.app",
+    featured: false,
+    year: 2025,
+    caseStudy: {
+      problem:
+        "Após um incidente em produção, o time precisa escrever um post-mortem estruturado — timeline, causa raiz, impacto, ações corretivas. Isso costuma acontecer dias depois, de memória, e consome horas de trabalho técnico valioso. PostMortem AI automatiza todo o processo: o engenheiro cola os logs e stack traces do incidente e o sistema gera o documento completo no formato padrão da indústria, eliminando o esforço manual e garantindo consistência e rastreabilidade.",
+      architecture: {
+        overview:
+          "Pipeline de dois prompts sequenciais separando extração de redação — o Prompt 1 extrai fatos objetivos dos logs em JSON estruturado, o Prompt 2 redige o post-mortem exclusivamente a partir desse JSON, nunca do log bruto. Strategy Pattern para parsing de três formatos de log. Idempotência via SHA-256 evitando reprocessamento. Resilience4j protegendo a integração com OpenAI. Backend Java 21 + Spring Boot 3.2, frontend Angular 17, deploy distribuído Render + Vercel.",
+        boundedContexts: [
+          "Log Ingestion (parsing multi-formato)",
+          "Extraction Pipeline (Prompt 1 — fatos objetivos)",
+          "Redaction Pipeline (Prompt 2 — documento final)",
+          "Idempotência (SHA-256)",
+          "Export (PDF com proteção XSS/SSRF)",
+          "Resilience (Circuit Breaker + Retry)",
+        ],
+        keyDecisions: [
+          {
+            title: "Pipeline de dois prompts para eliminar alucinação",
+            description:
+              "O problema central era o LLM inventar dados inexistentes nos logs — especialmente o \"Surface Attribution Error\": culpar um componente só porque aparece mencionado, sem evidência causal real. A solução foi separar em dois prompts: Prompt 1 extrai apenas fatos objetivos em JSON estruturado. Prompt 2 redige o post-mortem com base exclusivamente nesse JSON, nunca no log bruto. O LLM nunca acessa o log diretamente na fase de redação.",
+          },
+          {
+            title: "Strategy Pattern para parsing multi-formato",
+            description:
+              "LogParser é uma interface com implementações independentes para três formatos de log (structured JSON, plaintext, stack trace). O pipeline não sabe qual parser será usado — seleciona pela assinatura do conteúdo. Adicionar um novo formato é criar uma nova implementação sem tocar no pipeline.",
+          },
+          {
+            title: "Idempotência via SHA-256",
+            description:
+              "Logs idênticos submetidos múltiplas vezes geram o mesmo SHA-256. O sistema detecta o hash já processado e retorna o post-mortem existente sem chamar a OpenAI novamente — zero custo de API duplicado e resposta instantânea para resubmissões.",
+          },
+        ],
+      },
+      challenges: [
+        {
+          title: "Surface Attribution Error — LLM culpando componentes sem evidência causal",
+          description:
+            "O LLM consistentemente culpava componentes apenas por aparecerem no log, mesmo sem relação causal com o incidente — um tipo específico de alucinação que é particularmente perigoso em post-mortems, pois leva times a investigar causas erradas.",
+          solution:
+            "Pipeline de dois prompts com separação estrita de responsabilidades. Prompt 1 com instrução explícita: \"extraia apenas fatos observáveis, nunca infira causa\". Prompt 2 recebe apenas o JSON estruturado, nunca o log bruto — sem acesso ao texto original que causava a atribuição errônea. O LLM só pode redigir sobre o que foi explicitamente extraído.",
+        },
+        {
+          title: "Proteção contra XSS e SSRF no export PDF",
+          description:
+            "Post-mortems gerados por LLM podem conter URLs, scripts ou referências externas nos logs de entrada — se renderizados diretamente no PDF, abriam vetores de XSS e SSRF que poderiam vazar dados do servidor ou executar código.",
+          solution:
+            "Exportador PDF configurado com SUPPRESS_HTML, bloqueando renderização de qualquer markup HTML no conteúdo. Sanitização de inputs antes do pipeline de extração. O documento final é texto puro estruturado, imune a injeção de qualquer conteúdo ativo dos logs originais.",
+        },
+        {
+          title: "Resiliência na integração OpenAI — falhas e rate limits",
+          description:
+            "A OpenAI API tem latência variável, rate limits por tier e falhas intermitentes. Sem proteção, uma falha transiente da API derrubava o pipeline inteiro e o usuário perdia o trabalho de submissão.",
+          solution:
+            "Resilience4j com Circuit Breaker que abre após falhas consecutivas e Retry com backoff exponencial para falhas transientes. O Circuit Breaker evita cascata de timeouts. Após abrir, retorna erro claro ao usuário em vez de travar a thread. Logs de cada tentativa para observabilidade.",
+        },
+      ],
+      metrics: [
+        { label: "Testes automatizados", value: "67" },
+        { label: "Formatos de log suportados", value: "3" },
+        { label: "Prompts no pipeline", value: "2" },
+        { label: "Alucinações eliminadas", value: "SHA-256" },
+      ],
+      techStack: [
+        {
+          category: "Backend",
+          items: [
+            "Java 21",
+            "Spring Boot 3.2",
+            "OpenAI API",
+            "Resilience4j",
+            "Testcontainers",
+            "WireMock",
+          ],
+        },
+        {
+          category: "Persistência",
+          items: ["PostgreSQL", "Flyway", "Idempotência SHA-256"],
+        },
+        {
+          category: "Frontend",
+          items: ["Angular 17", "Export PDF"],
+        },
+        {
+          category: "Infra",
+          items: ["Docker", "Render", "Vercel", "GitHub Actions"],
+        },
+      ],
+      demoMoments: [
+        {
+          title: "Log para post-mortem em segundos",
+          description:
+            "Colar um stack trace real de um NullPointerException em produção e ver o sistema gerar automaticamente timeline, causa raiz, impacto e ações corretivas no formato padrão da indústria.",
+        },
+        {
+          title: "Idempotência em ação",
+          description:
+            "Submeter o mesmo log duas vezes e ver o sistema retornar o post-mortem existente instantaneamente na segunda chamada — zero custo de API, resposta imediata.",
+        },
+        {
+          title: "Circuit Breaker protegendo o pipeline",
+          description:
+            "Simular falha na OpenAI API e ver o Circuit Breaker abrir, retornando erro claro ao usuário em vez de travar o sistema com timeouts em cascata.",
+        },
+      ],
+    },
+  },
 ];

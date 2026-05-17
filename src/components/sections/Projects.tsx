@@ -7,16 +7,17 @@ import { projects, type Project } from "@/data/projects";
 import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
 
 // ─── Layout logic ─────────────────────────────────────────────
-// Row 1: [0] FortunAI   (8/12) + [1] NotifyFlow    (4/12)
-// Row 2: [2] AuditVault (6/12) + [3] ContractGuard (6/12)
-// Row 3: [4] RoutineFlow (12/12 — full-width banner)
-// Extras além de 5: 6/12
+// Row 1: [0] FortunAI    (8/12) + [1] NotifyFlow     (4/12)
+// Row 2: [2] AuditVault  (6/12) + [3] ContractGuard  (6/12)
+// Row 3: [4] RoutineFlow (8/12) + [5] PostMortem AI  (4/12)
+// Extras além de 6: 6/12
 const COL_SPANS: string[] = [
   "col-span-full lg:col-span-8",
   "col-span-full lg:col-span-4",
   "col-span-full lg:col-span-6",
   "col-span-full lg:col-span-6",
-  "col-span-full",
+  "col-span-full lg:col-span-8",
+  "col-span-full lg:col-span-4",
 ];
 
 function buildLayout(items: Project[]): Array<Project & { colSpan: string }> {
