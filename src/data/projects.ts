@@ -957,4 +957,145 @@ export const projects: Project[] = [
       ],
     },
   },
+  {
+    id: "agent-memory-store",
+    title: "Agent Memory Store",
+    description:
+      "API REST de memória de longo prazo para agentes de IA — busca híbrida semântica + temporal com pgvector, consolidação via Spring Batch e multitenancy com RLS.",
+    longDescription:
+      "Agentes de IA não têm memória entre sessões — cada conversa começa do zero. O Agent Memory Store é uma API que qualquer agente pode consumir para armazenar observações, recuperar contexto por similaridade semântica e consolidar automaticamente memórias antigas, resolvendo o maior gap de usabilidade de agentes autônomos.",
+    stack: [
+      "Java 21",
+      "Spring Boot",
+      "pgvector",
+      "Spring AI",
+      "Spring Batch",
+      "PostgreSQL",
+      "Resilience4j",
+      "Testcontainers",
+      "WireMock",
+    ],
+    githubUrl: "https://github.com/joaogabriel43/agent-memory-store",
+    featured: false,
+    year: 2025,
+    caseStudy: {
+      problem:
+        "Agentes de IA não têm memória entre sessões — cada conversa começa do zero, sem contexto do que aconteceu antes. Isso torna agentes autônomos inutilizáveis em fluxos longos onde o histórico importa. O Agent Memory Store é uma API REST que qualquer agente pode consumir para armazenar observações, recuperar contexto relevante por similaridade semântica e consolidar automaticamente memórias antigas — resolvendo o maior gap de usabilidade de agentes autônomos hoje.",
+      architecture: {
+        overview:
+          "Clean Architecture em 4 camadas com zero violação verificada: domain com entidades puras e ports sem nenhum import de Spring, JPA ou Spring AI; application orquestrando casos de uso; infrastructure com EmbeddingAdapter (Spring AI + OpenAI), JdbcClient + pgvector e ConsolidationJob (Spring Batch); presentation com controllers REST e Swagger. Busca híbrida com score composto (similaridade cosine 70% + recência 30%) calculada em query SQL única. Multitenancy por X-Tenant-Id com RLS como segunda camada.",
+        boundedContexts: [
+          "Memory Store (armazenamento + embedding)",
+          "Semantic Search (busca híbrida semântica + temporal)",
+          "Consolidation Engine (Spring Batch EPISODIC→SEMANTIC)",
+          "Resilience Layer (CircuitBreaker + RateLimiter)",
+          "Multitenancy (ThreadLocal + RLS)",
+          "Observabilidade (p6spy + Actuator)",
+        ],
+        keyDecisions: [
+          {
+            title: "Busca híbrida em query SQL única — sem N+1",
+            description:
+              "Score composto calculado inteiramente no PostgreSQL em uma única query nativa com JdbcClient: (1 - (embedding <=> queryEmbedding)) * 0.7 + decayRecência * 0.3. Pesos configuráveis via application.yml. p6spy confirmou 2 queries por request de search — zero N+1.",
+          },
+          {
+            title: "Spring Batch com FaultTolerant Step — falha por item, não por job",
+            description:
+              "A consolidação processa múltiplos tenants sem que a falha de um quebre o job inteiro. FaultTolerant Step com skip(EmbeddingUnavailableException) e retry(retryLimit=3). Idempotência garantida pelo campo consolidated=true — o ItemReader filtra consolidated=FALSE, então rodar duas vezes produz o mesmo resultado.",
+          },
+          {
+            title: "Domínio protegido do provider de IA",
+            description:
+              "EmbeddingPort é uma interface no domínio — OpenAI é detalhe de infraestrutura. EmbeddingUnavailableException protege o domínio de exceções do provider. CircuitBreaker + RateLimiter no EmbeddingAdapter controlam throughput sem Thread.sleep. Trocar de OpenAI para outro provider não toca no domínio.",
+          },
+        ],
+      },
+      challenges: [
+        {
+          title: "Busca semântica + temporal sem N+1 em query única",
+          description:
+            "Combinar similaridade semântica (cosine distance com pgvector) com recência temporal sem fazer duas queries separadas ou loop sobre resultados — o que causaria N+1 e degradaria performance com volume de memórias.",
+          solution:
+            "Score composto calculado inteiramente no PostgreSQL em query nativa única com JdbcClient. Decay temporal calculado com EXTRACT(EPOCH FROM (NOW() - created_at)) diretamente no SQL. Pesos configuráveis. p6spy confirmou zero N+1 em todos os fluxos críticos.",
+        },
+        {
+          title: "Bug crítico: sequência do Spring Batch renomeada no Batch 5",
+          description:
+            "A migration V3 criava BATCH_JOB_INSTANCE_SEQ mas o Spring Batch 5 lê BATCH_JOB_SEQ (renomeado desde o Batch 4). O job nunca teria rodado em produção — relation \"batch_job_seq\" does not exist na primeira execução real.",
+          solution:
+            "Descoberto via execução real dos testes de integração com Testcontainers na revisão final. Corrigido na migration antes do deploy. Este bug passaria despercebido em qualquer ambiente com initialize-schema=always — a disciplina de usar Flyway como fonte única de verdade foi o que tornou o problema detectável.",
+        },
+        {
+          title: "Consolidação resiliente sem duplicar memórias em reexecuções",
+          description:
+            "O job de consolidação precisava ser idempotente — rodar duas vezes não podia duplicar memórias semânticas — e resiliente a falhas parciais sem perder o progresso já processado.",
+          solution:
+            "Campo consolidated=true nas episódicas de origem: ItemReader filtra consolidated=FALSE, garantindo que memórias já processadas nunca entram no pipeline novamente. FaultTolerant Step com semântica de item — uma falha em uma memória faz skip desse item, não cancela o job inteiro.",
+        },
+      ],
+      metrics: [
+        { label: "Testes de integração", value: "11/11" },
+        { label: "Queries por request crítico", value: "2" },
+        { label: "Violações Clean Architecture", value: "0" },
+        { label: "Gates de CI/CD", value: "4" },
+      ],
+      techStack: [
+        {
+          category: "Backend",
+          items: [
+            "Java 21",
+            "Spring Boot",
+            "Spring AI",
+            "Spring Batch",
+            "JdbcClient",
+            "Flyway",
+          ],
+        },
+        {
+          category: "Persistência",
+          items: [
+            "PostgreSQL",
+            "pgvector (HNSW)",
+            "RLS multitenancy",
+            "Score composto SQL",
+          ],
+        },
+        {
+          category: "Resiliência",
+          items: [
+            "Resilience4j (CircuitBreaker + RateLimiter)",
+            "EmbeddingUnavailableException",
+            "FaultTolerant Step",
+          ],
+        },
+        {
+          category: "Testes / CI",
+          items: [
+            "Testcontainers",
+            "WireMock standalone",
+            "p6spy",
+            "SpotBugs",
+            "OWASP",
+          ],
+        },
+      ],
+      demoMoments: [
+        {
+          title: "Consolidação ao vivo — episódico para semântico",
+          description:
+            "POST 5 memórias relacionadas → POST /jobs/consolidation → GET status mostra RUNNING→COMPLETED → GET /memories?type=SEMANTIC mostra 1 memória semântica com sourceMemoryIds apontando para as 5 episódicas. Arquitetura assíncrona e rastreabilidade em ação.",
+        },
+        {
+          title: "Isolamento de multitenancy real",
+          description:
+            "Armazena 3 memórias com X-Tenant-Id: tenant-a. Busca com X-Tenant-Id: tenant-b retorna lista vazia. Stats com tenant-b mostram totalMemories: 0. Multitenancy não é cosmético — isolamento em todas as camadas.",
+        },
+        {
+          title: "Circuit Breaker protegendo o domínio",
+          description:
+            "Derrubar o mock da OpenAI via WireMock. POST /memories retorna 503 com Problem Details limpo, sem stack trace, sem mencionar OpenAI. Restaurar conexão — próxima chamada funciona normalmente. O provider é um detalhe de infraestrutura.",
+        },
+      ],
+    },
+  },
 ];
