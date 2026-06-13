@@ -818,4 +818,143 @@ export const projects: Project[] = [
       ],
     },
   },
+  {
+    id: "ratemaster",
+    title: "RateMaster",
+    description:
+      "Biblioteca Spring Boot Starter para rate limiting distribuído real — Redis + Lua atômico, annotation @RateLimit, fallback configurável e métricas Micrometer.",
+    longDescription:
+      "Rate limiting in-memory como Resilience4j falha em ambientes com múltiplas instâncias — cada instância tem seu próprio contador. O RateMaster usa Redis como estado compartilhado com scripts Lua executados atomicamente via EVAL, garantindo que nenhuma race condition ocorra entre nós. Uma annotation @RateLimit é tudo que o desenvolvedor precisa.",
+    stack: [
+      "Java 21",
+      "Spring Boot",
+      "Redis",
+      "Lua",
+      "AOP",
+      "Micrometer",
+      "jqwik",
+      "Testcontainers",
+      "GitHub Packages",
+    ],
+    githubUrl: "https://github.com/joaogabriel43/RateMaster",
+    featured: false,
+    year: 2025,
+    caseStudy: {
+      problem:
+        "APIs em produção com múltiplas instâncias não conseguem aplicar rate limiting consistente com soluções in-memory — cada instância tem seu próprio contador, então um cliente que dispara 10 instâncias pode exceder o limite 10x sem ser barrado. O RateMaster resolve isso usando Redis como estado compartilhado com scripts Lua executados atomicamente, garantindo consistência distribuída real. É uma biblioteca Spring Boot Starter: uma annotation @RateLimit e rate limiting distribuído está ativo.",
+      architecture: {
+        overview:
+          "Arquitetura Hexagonal com 3 módulos Maven separados. ratemaster-core é Java puro sem nenhuma dependência de Spring ou Redis — define a porta LuaScriptExecutor, o algoritmo TokenBucketRateLimiter e Records imutáveis. ratemaster-spring-boot-starter integra o core ao Spring via AOP, SPI de resolução de chave, adapter Redis e fallback configurável. ratemaster-examples é o app demo com teste E2E via Testcontainers.",
+        boundedContexts: [
+          "Rate Limiting Core (algoritmo puro, sem framework)",
+          "Interceptação AOP (@RateLimit + Aspect)",
+          "Resolução de Chave (SPI + 4 built-ins)",
+          "Execução Redis (adapter + script Lua cache)",
+          "Resiliência (fallback OPEN/CLOSED + timeout)",
+          "Observabilidade (Micrometer + Actuator)",
+        ],
+        keyDecisions: [
+          {
+            title: "Script Lua via EVAL — atomicidade real no Redis",
+            description:
+              "A operação verificar-decrementar-responder precisa ser atômica. Com Redis multi-client, duas instâncias podem ler \"5 tokens disponíveis\" simultaneamente e ambas decrementarem. O script Lua é executado pelo Redis inteiro em uma única operação atômica via EVAL, bloqueando qualquer outro comando. O clock interno usa redis.call(TIME) do servidor Redis, eliminando clock-skew entre instâncias da aplicação.",
+          },
+          {
+            title: "Porta Hexagonal no core — Redis é um adapter",
+            description:
+              "ratemaster-core define a interface LuaScriptExecutor sem nenhuma dependência de driver Redis. SpringDataRedisScriptExecutor no starter satisfaz essa porta via StringRedisTemplate — client-agnostic. Trocar de Lettuce para Jedis não toca no algoritmo. Maven enforcer plugin confirma zero dependências Spring no core em todo CI run.",
+          },
+          {
+            title: "Sanitização de chave Redis contra injeção",
+            description:
+              "Se resolvedKey vem de um header HTTP, um cliente malicioso pode injetar caracteres especiais para colidir com a chave de outro bucket. RateLimitKeyUtils.sanitize() substitui : por - e remove caracteres especiais do Redis antes de qualquer composição de chave — preserva legibilidade e é documentado como comportamento automático no Javadoc.",
+          },
+        ],
+      },
+      challenges: [
+        {
+          title: "Atomicidade real em ambiente distribuído",
+          description:
+            "Rate limiting distribuído exige que verificar saldo, decrementar e responder sejam uma operação atômica. Com Redis multi-client, duas instâncias podem ler \"5 tokens disponíveis\" simultaneamente, ambas decrementarem, e o limite ser ultrapassado silenciosamente.",
+          solution:
+            "Script Lua executado via EVAL — Redis executa o script inteiro em uma única operação atômica, bloqueando qualquer outro comando. Clock interno usa redis.call(TIME) do servidor Redis, eliminando clock-skew entre instâncias. Compatível com Redis 7 onde replicação por efeitos é o default.",
+        },
+        {
+          title: "Injeção de chave Redis via header HTTP",
+          description:
+            "A chave Redis é composta por ratemaster:tokenbucket:{limitName}:{resolvedKey}. Se resolvedKey vem de X-Forwarded-For, um cliente malicioso pode injetar 1.2.3.4:ratemaster:tokenbucket:adminEndpoint:trustedUser e colidir com a chave de outro bucket, bypassando rate limits de endpoints críticos.",
+          solution:
+            "RateLimitKeyUtils.sanitize() aplicado no RateLimitAspect antes de qualquer composição — substitui : por - e remove caracteres especiais do Redis. Preserva legibilidade (preferível a SHA-256) e é documentado no Javadoc como comportamento automático e auditável.",
+        },
+        {
+          title: "Thread pool exhaustion silencioso com Redis instável",
+          description:
+            "CompletableFuture.orTimeout() libera o caller em command-timeout-ms, mas a thread no rateMasterExecutor continua bloqueada no socket Redis até o timeout do driver. Sob Redis lento e alto tráfego, o pool de threads se esgota enquanto a aplicação parece responder normalmente.",
+          solution:
+            "Detecção automática de Virtual Threads (Java 21) como caminho primário — VTs parkam no I/O sem bloquear platform threads. Fallback para pool de plataforma configurável. README documenta explicitamente que spring.data.redis.timeout deve ser menor ou igual a ratemaster.redis.command-timeout-ms, com bloco de aviso destacado.",
+        },
+      ],
+      metrics: [
+        { label: "Testes totais", value: "29+" },
+        { label: "Property tests (jqwik)", value: "4" },
+        { label: "Threads concorrentes testadas", value: "50" },
+        { label: "CVEs críticos corrigidos", value: "3" },
+      ],
+      techStack: [
+        {
+          category: "Core",
+          items: [
+            "Java 21",
+            "Token Bucket Algorithm",
+            "Lua Script (EVAL)",
+            "Records imutáveis",
+          ],
+        },
+        {
+          category: "Spring Integration",
+          items: [
+            "Spring Boot Starter",
+            "Spring AOP/CGLIB",
+            "Spring Data Redis",
+            "Micrometer",
+          ],
+        },
+        {
+          category: "Testes",
+          items: [
+            "jqwik (property-based)",
+            "Testcontainers",
+            "Virtual Threads concorrência",
+          ],
+        },
+        {
+          category: "Segurança / CI",
+          items: [
+            "OWASP Dependency-Check",
+            "Trivy",
+            "GitLeaks",
+            "SpotBugs",
+            "GitHub Packages",
+          ],
+        },
+      ],
+      demoMoments: [
+        {
+          title: "Zero to rate-limited em 3 linhas",
+          description:
+            "Adicionar @RateLimit(name=\"api\", capacity=5, refillRate=1.0) em um endpoint. Os primeiros 5 requests retornam 200. O 6° retorna 429 com header Retry-After: 1. Após 1 segundo, aceita novamente. Zero configuração extra.",
+        },
+        {
+          title: "Injeção de chave tentada e bloqueada",
+          description:
+            "Enviar request com X-Forwarded-For malicioso contendo separadores Redis. Inspecionar via redis-cli KEYS * e ver a chave sanitizada — inofensiva, sem colisão. A sanitização é visível e auditável.",
+        },
+        {
+          title: "Redis cai, aplicação sobrevive",
+          description:
+            "Pausar o container Redis no meio de carga via Testcontainers. Endpoints com fallback=OPEN continuam em 200. Endpoints com fallback=CLOSED retornam 503. Actuator mostra ratemaster.requests.rejected com tag REDIS_FALLBACK_CLOSED. Redis volta — tudo normaliza sem restart.",
+        },
+      ],
+    },
+  },
 ];
