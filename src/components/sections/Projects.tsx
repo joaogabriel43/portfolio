@@ -7,18 +7,22 @@ import { projects, type Project } from "@/data/projects";
 import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
 
 // ─── Layout logic ─────────────────────────────────────────────
-// Row 1: [0] FortunAI    (8/12) + [1] NotifyFlow         (4/12)
-// Row 2: [2] AuditVault  (6/12) + [3] ContractGuard      (6/12)
-// Row 3: [4] RoutineFlow (8/12) + [5] PostMortem AI      (4/12)
-// Row 4: [6] RateMaster  (6/12) + [7] Agent Memory Store (6/12)
-// Extras além de 8: 6/12
+// Row 1: [0] FortunAI    (8/12) + [1] NotifyFlow      (4/12)
+// Row 2: [2] AuditVault  (6/12) + [3] ContractGuard   (6/12)
+// Row 3: [4] RoutineFlow (4/12) + [5] PostMortem AI   (4/12) + [6] RateMaster (4/12)
+// Row 4: [7] Agent Memory Store (4/12) + [8] FlowGuard (8/12 — featured)
+// Row 5: [9] APIForge    (6/12) + [10] JavaMCPHub     (6/12)
+// Extras além de 11: 6/12
 const COL_SPANS: string[] = [
   "col-span-full lg:col-span-8",
   "col-span-full lg:col-span-4",
   "col-span-full lg:col-span-6",
   "col-span-full lg:col-span-6",
-  "col-span-full lg:col-span-8",
+  "col-span-full sm:col-span-6 lg:col-span-4",
+  "col-span-full sm:col-span-6 lg:col-span-4",
+  "col-span-full sm:col-span-6 lg:col-span-4",
   "col-span-full lg:col-span-4",
+  "col-span-full lg:col-span-8",
   "col-span-full lg:col-span-6",
   "col-span-full lg:col-span-6",
 ];

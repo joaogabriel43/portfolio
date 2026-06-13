@@ -65,7 +65,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className="relative group bg-surface border border-border rounded-sm overflow-hidden"
+      className="relative group bg-surface border border-border rounded-sm overflow-hidden h-full flex flex-col"
     >
       {/* Animated top border on hover */}
       <motion.div
@@ -84,7 +84,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         />
       )}
 
-      <div className="p-7 md:p-8">
+      <div className="p-7 md:p-8 flex-1 flex flex-col">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-5">
           <div className="flex items-center gap-3">
@@ -124,8 +124,8 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           ))}
         </div>
 
-        {/* Links */}
-        <div className="flex items-center gap-3 pt-5 border-t border-border/60 flex-wrap">
+        {/* Links — anchored to the bottom so cards of differing content align */}
+        <div className="flex items-center gap-3 mt-auto pt-5 border-t border-border/60 flex-wrap">
           <motion.a
             href={project.githubUrl}
             target="_blank"
