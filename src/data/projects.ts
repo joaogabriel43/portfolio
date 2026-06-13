@@ -23,6 +23,8 @@ export interface Project {
   liveUrl?: string;
   featured: boolean;
   year: number;
+  /** Categorias para o filtro da página /projects (ex: "Backend", "AI / LLM"). */
+  tags: string[];
   caseStudy?: CaseStudy;
 }
 
@@ -30,6 +32,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: "finassistant",
+    tags: ["Backend", "AI / LLM"],
     title: "FortunAI",
     description:
       "Assistente financeiro inteligente com integração de IA para análise de portfólios e recomendações personalizadas.",
@@ -163,6 +166,7 @@ export const projects: Project[] = [
   },
   {
     id: "notifyflow",
+    tags: ["Backend", "Mensageria"],
     title: "NotifyFlow",
     description:
       "Motor de notificações multi-canal assíncrono com garantia de entrega via Outbox Pattern, fallback automático entre canais e Circuit Breaker.",
@@ -295,6 +299,7 @@ export const projects: Project[] = [
   },
   {
     id: "auditvault",
+    tags: ["Backend", "Infra / DevOps"],
     title: "AuditVault",
     description:
       "Motor de auditoria plug-and-play com Event Sourcing, CQRS e dashboard em tempo real via SSE para rastreabilidade total de APIs REST.",
@@ -428,6 +433,7 @@ export const projects: Project[] = [
   },
   {
     id: "contractguard",
+    tags: ["Developer Tooling", "Infra / DevOps"],
     title: "ContractGuard",
     description:
       "Engine de análise estática que detecta breaking changes em contratos OpenAPI via CI/CD, bloqueando merges automaticamente antes que APIs quebrem em produção.",
@@ -566,6 +572,7 @@ export const projects: Project[] = [
   },
   {
     id: "routineflow",
+    tags: ["Backend"],
     title: "RoutineFlow",
     description:
       "Sistema de gerenciamento de rotina pessoal orientado a dados com importação de rotinas via YAML/TXT, streaks engine, analytics por área e edição retroativa de check-ins.",
@@ -693,6 +700,7 @@ export const projects: Project[] = [
   },
   {
     id: "postmortem-ai",
+    tags: ["Backend", "AI / LLM"],
     title: "PostMortem AI",
     description:
       "Gerador inteligente de post-mortems de incidentes a partir de logs e stack traces — do caos ao documento estruturado em segundos.",
@@ -820,6 +828,7 @@ export const projects: Project[] = [
   },
   {
     id: "ratemaster",
+    tags: ["Developer Tooling", "Infra / DevOps"],
     title: "RateMaster",
     description:
       "Biblioteca Spring Boot Starter para rate limiting distribuído real — Redis + Lua atômico, annotation @RateLimit, fallback configurável e métricas Micrometer.",
@@ -959,6 +968,7 @@ export const projects: Project[] = [
   },
   {
     id: "agent-memory-store",
+    tags: ["AI / LLM", "Backend"],
     title: "Agent Memory Store",
     description:
       "API REST de memória de longo prazo para agentes de IA — busca híbrida semântica + temporal com pgvector, consolidação via Spring Batch e multitenancy com RLS.",
@@ -1100,6 +1110,7 @@ export const projects: Project[] = [
   },
   {
     id: "flowguard",
+    tags: ["Developer Tooling", "Backend"],
     title: "FlowGuard",
     description:
       "Plataforma self-hosted de feature flags com rollout progressivo, avaliação local no SDK (zero latência), SSE em tempo real e suporte multi-tenant — alternativa ao LaunchDarkly para Spring Boot.",
@@ -1243,6 +1254,7 @@ export const projects: Project[] = [
   },
   {
     id: "apiforge",
+    tags: ["Developer Tooling", "AI / LLM"],
     title: "APIForge",
     description:
       "Gerador de API REST completa a partir de schema SQL — entity, repository, service, controller, DTOs, testes, migrations Flyway e docker-compose em segundos.",
@@ -1383,6 +1395,7 @@ export const projects: Project[] = [
   },
   {
     id: "java-mcp-hub",
+    tags: ["AI / LLM", "Infra / DevOps"],
     title: "JavaMCPHub",
     description:
       "Servidor MCP de referência em Java 21 + Spring AI — conformidade verificada com spec MCP 2025-06-18, dual transport (stdio + Streamable HTTP), observabilidade Micrometer e publicado no GitHub Packages.",

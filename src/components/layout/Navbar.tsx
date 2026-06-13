@@ -22,6 +22,12 @@ type NavHref = (typeof NAV_LINKS)[number]["href"];
 
 const SECTION_IDS = ["hero", "about", "skills", "certificates", "projects", "experience", "contact"];
 
+// Section links que têm uma página dedicada quando fora da home.
+// Ex: na home "#projects" faz scroll; em outras páginas leva a "/projects".
+const SECTION_PAGE_FALLBACK: Record<string, string> = {
+  "#projects": "/projects",
+};
+
 // ─── Hamburger icon ───────────────────────────────────────────
 function HamburgerIcon({ open }: { open: boolean }) {
   return (
@@ -120,6 +126,11 @@ export function Navbar() {
       // Page link: active when pathname starts with href
       return pathname.startsWith(href);
     }
+    // Section link com página dedicada: ativo quando estamos nessa página
+    const pageFallback = SECTION_PAGE_FALLBACK[href];
+    if (!isHomePage && pageFallback) {
+      return pathname.startsWith(pageFallback);
+    }
     // Section link: active via IntersectionObserver (home only)
     return isHomePage && activeSection === href.slice(1);
   }
@@ -161,6 +172,23 @@ export function Navbar() {
       return (
         <Link
           href={href}
+          className={cls}
+          aria-current={active ? "page" : undefined}
+          onClick={() => setMenuOpen(false)}
+        >
+          {mobile && activeIndicator}
+          {label}
+          {!mobile && activeIndicator}
+        </Link>
+      );
+    }
+
+    // Section link com página dedicada e fora da home → vira page link
+    const pageFallback = SECTION_PAGE_FALLBACK[href];
+    if (!isHomePage && pageFallback) {
+      return (
+        <Link
+          href={pageFallback}
           className={cls}
           aria-current={active ? "page" : undefined}
           onClick={() => setMenuOpen(false)}
