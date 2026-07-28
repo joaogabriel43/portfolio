@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
-import { SectionLabel } from "@/components/ui/SectionLabel";
+import { Footer } from "@/components/layout/Footer";
 import { getAllPosts, type PostMeta } from "@/lib/mdx";
 
 export const metadata: Metadata = {
@@ -19,60 +19,36 @@ function BlogCard({ post, index }: { post: PostMeta; index: number }) {
   });
 
   return (
-    <article className="group">
-      <Link
-        href={`/blog/${post.slug}`}
-        className="block py-8 border-b border-border hover:border-accent/30 transition-colors duration-300"
-        aria-label={`Ler artigo: ${post.title}`}
-      >
-        <div className="flex flex-col md:flex-row md:items-start md:gap-10">
-          {/* Index + date block */}
-          <div className="flex-shrink-0 mb-4 md:mb-0 md:w-40 lg:w-48">
-            <span className="font-mono text-[11px] text-accent/30 select-none block mb-1">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-            <time
-              dateTime={post.date}
-              className="font-mono text-[11px] text-muted/60 block"
-            >
-              {formattedDate}
-            </time>
-            <span className="font-mono text-[11px] text-muted/40 block mt-0.5">
-              {post.readingTime}
-            </span>
-          </div>
+    <article
+      data-reveal
+      className="group relative grid grid-cols-1 gap-y-4 border-t border-border py-9 md:grid-cols-[minmax(140px,200px)_1fr] md:gap-x-[clamp(24px,4vw,56px)]"
+    >
+      <div className="flex flex-col gap-1.5">
+        <p className="eyebrow-sm">{String(index + 1).padStart(2, "0")}</p>
+        <time dateTime={post.date} className="font-mono text-[11px] text-muted">
+          {formattedDate}
+        </time>
+        <p className="font-mono text-[11px] text-dim">{post.readingTime}</p>
+      </div>
 
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <h2 className="font-serif text-xl md:text-2xl font-bold text-foreground leading-snug mb-3 group-hover:text-accent transition-colors duration-200">
-              {post.title}
-            </h2>
-            <p className="font-sans text-sm text-muted leading-relaxed mb-4">
-              {post.description}
-            </p>
+      <div>
+        <h2 className="text-[clamp(1.3rem,2.6vw,1.8rem)] font-light leading-[1.25] tracking-[-0.03em]">
+          <Link
+            href={`/blog/${post.slug}`}
+            className="transition-colors duration-base ease-out after:absolute after:inset-0 after:content-[''] group-hover:text-accent"
+          >
+            {post.title}
+          </Link>
+        </h2>
 
-            {/* Tags */}
-            <div className="flex flex-wrap gap-1.5 mb-4">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="font-mono text-[10px] px-2 py-0.5 rounded-sm bg-background border border-border text-muted/70"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+        <p className="mt-4 max-w-[560px] text-[15px] leading-[1.6] text-muted [text-wrap:pretty]">
+          {post.description}
+        </p>
 
-            {/* Read more indicator */}
-            <span className="inline-flex items-center gap-1.5 font-mono text-xs text-accent/60 group-hover:text-accent transition-colors duration-200">
-              Ler artigo
-              <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
-                →
-              </span>
-            </span>
-          </div>
-        </div>
-      </Link>
+        <p className="mt-5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted">
+          {post.tags.join(" · ")}
+        </p>
+      </div>
     </article>
   );
 }
@@ -84,44 +60,43 @@ export default function BlogPage() {
   return (
     <>
       <Navbar />
-      <main id="main-content" className="section-padding pt-32">
-        <div className="container-main">
+      <main id="main-content" className="container-page pb-32 pt-24">
+        <div className="mx-auto max-w-[1000px]">
           {/* ── Header ── */}
-          <div className="mb-16">
-            <div className="mb-5">
-              <SectionLabel animate={false}>blog</SectionLabel>
-            </div>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4 leading-[1.1]">
-              Artigos técnicos
+          <header className="flex flex-col gap-6">
+            <p className="eyebrow">Blog</p>
+            <h1 className="display-lg text-[clamp(2.4rem,7vw,5rem)]">
+              Artigos técnicos.
             </h1>
-            <p className="font-sans text-muted text-lg max-w-xl">
-              Reflexões sobre engenharia de software, padrões de arquitetura e boas
-              práticas de desenvolvimento.
+            <p className="max-w-[560px] text-[17px] leading-[1.55] text-muted [text-wrap:pretty]">
+              Reflexões sobre engenharia de software, padrões de arquitetura e
+              boas práticas de desenvolvimento.
             </p>
-          </div>
+          </header>
 
           {/* ── Post list ── */}
-          {posts.length === 0 ? (
-            <p className="font-sans text-muted text-sm">
-              Nenhum artigo publicado ainda. Em breve!
-            </p>
-          ) : (
-            <div>
-              {/* Top border */}
-              <div className="border-t border-border" />
-              {posts.map((post, i) => (
-                <BlogCard key={post.slug} post={post} index={i} />
-              ))}
-            </div>
-          )}
+          <div className="mt-16">
+            {posts.length === 0 ? (
+              <p className="border-t border-border pt-9 text-[15px] text-muted">
+                Nenhum artigo publicado ainda. Em breve.
+              </p>
+            ) : (
+              <>
+                {posts.map((post, i) => (
+                  <BlogCard key={post.slug} post={post} index={i} />
+                ))}
+                <div className="border-t border-border" />
+              </>
+            )}
+          </div>
 
-          {/* ── Back to portfolio ── */}
-          <div className="mt-16 pt-8 border-t border-border/50">
+          {/* ── Voltar ── */}
+          <div className="mt-14">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 font-mono text-xs text-muted hover:text-accent transition-colors duration-200 group"
+              className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
             >
-              <span className="inline-block transition-transform duration-200 group-hover:-translate-x-1">
+              <span className="inline-block transition-transform duration-base ease-out group-hover:-translate-x-1">
                 ←
               </span>
               Voltar ao portfolio
@@ -129,6 +104,7 @@ export default function BlogPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </>
   );
 }

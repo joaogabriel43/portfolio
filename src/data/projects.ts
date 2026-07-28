@@ -7,9 +7,37 @@ export interface CaseStudy {
     keyDecisions: { title: string; description: string }[];
   };
   challenges: { title: string; description: string; solution: string }[];
-  metrics: { label: string; value: string }[];
+  metrics: {
+    label: string;
+    value: string;
+    /**
+     * Marca ESTA métrica como o total canônico de testes do projeto.
+     * Serve de fonte única para o número agregado exibido na home
+     * (ver `totalTests` em src/data/site.ts).
+     *
+     * Só pode existir UMA por projeto. Não marcar métricas que sejam
+     * decomposição de outra — em finassistant, por exemplo, "Testes
+     * backend" (238) + "Testes frontend" (91) formam os "Testes
+     * automatizados" (329); apenas o 329 é marcado.
+     */
+    isTestTotal?: boolean;
+  }[];
   techStack: { category: string; items: string[] }[];
   demoMoments: { title: string; description: string }[];
+}
+
+// ─── Lineup (carrossel da home) ──────────────────────────────
+export interface LineupMeta {
+  /** Posição no carrossel horizontal da home. */
+  order: number;
+  /** Rótulo de domínio exibido no topo do card (ex: "IA / Backend"). */
+  label: string;
+  /** Palavra-conceito que define o projeto, exibida em destaque. */
+  keyword: string;
+  /** Tamanho da palavra-conceito em px — ajustado ao comprimento. */
+  keywordSize: number;
+  /** Linha de stack resumida exibida no rodapé do card. */
+  stackLine: string;
 }
 
 // ─── Project types ───────────────────────────────────────────
@@ -25,7 +53,13 @@ export interface Project {
   year: number;
   /** Categorias para o filtro da página /projects (ex: "Backend", "AI / LLM"). */
   tags: string[];
+  lineup: LineupMeta;
   caseStudy?: CaseStudy;
+}
+
+/** Projetos na ordem do carrossel da home. */
+export function getLineup(): Project[] {
+  return [...projects].sort((a, b) => a.lineup.order - b.lineup.order);
 }
 
 // ─── Data ────────────────────────────────────────────────────
@@ -33,6 +67,13 @@ export const projects: Project[] = [
   {
     id: "finassistant",
     tags: ["Backend", "AI / LLM"],
+    lineup: {
+      order: 1,
+      label: "IA / Backend",
+      keyword: "Markowitz",
+      keywordSize: 26,
+      stackLine: "Java 17 · Next.js · Gemini · PostgreSQL",
+    },
     title: "FortunAI",
     description:
       "Assistente financeiro inteligente com integração de IA para análise de portfólios e recomendações personalizadas.",
@@ -104,7 +145,7 @@ export const projects: Project[] = [
         },
       ],
       metrics: [
-        { label: "Testes automatizados", value: "329" },
+        { label: "Testes automatizados", value: "329", isTestTotal: true },
         { label: "Testes backend (JUnit 5)", value: "238" },
         { label: "Testes frontend (Vitest)", value: "91" },
         { label: "Simulações Monte Carlo", value: "10.000" },
@@ -167,6 +208,13 @@ export const projects: Project[] = [
   {
     id: "notifyflow",
     tags: ["Backend", "Mensageria"],
+    lineup: {
+      order: 3,
+      label: "Mensageria",
+      keyword: "Outbox",
+      keywordSize: 28,
+      stackLine: "RabbitMQ · Resilience4j · Angular 17",
+    },
     title: "NotifyFlow",
     description:
       "Motor de notificações multi-canal assíncrono com garantia de entrega via Outbox Pattern, fallback automático entre canais e Circuit Breaker.",
@@ -300,6 +348,13 @@ export const projects: Project[] = [
   {
     id: "auditvault",
     tags: ["Backend", "Infra / DevOps"],
+    lineup: {
+      order: 2,
+      label: "Backend",
+      keyword: "CQRS",
+      keywordSize: 30,
+      stackLine: "Event Sourcing · Elasticsearch · SSE",
+    },
     title: "AuditVault",
     description:
       "Motor de auditoria plug-and-play com Event Sourcing, CQRS e dashboard em tempo real via SSE para rastreabilidade total de APIs REST.",
@@ -434,6 +489,13 @@ export const projects: Project[] = [
   {
     id: "contractguard",
     tags: ["Developer Tooling", "Infra / DevOps"],
+    lineup: {
+      order: 8,
+      label: "Devtooling",
+      keyword: "AST diff",
+      keywordSize: 26,
+      stackLine: "Swagger Parser · Testcontainers · GH Actions",
+    },
     title: "ContractGuard",
     description:
       "Engine de análise estática que detecta breaking changes em contratos OpenAPI via CI/CD, bloqueando merges automaticamente antes que APIs quebrem em produção.",
@@ -510,7 +572,7 @@ export const projects: Project[] = [
         },
       ],
       metrics: [
-        { label: "Testes unitários (TDD)", value: "90+" },
+        { label: "Testes unitários (TDD)", value: "90+", isTestTotal: true },
         { label: "Cobertura dos casos de uso", value: "100%" },
         { label: "Tempo de validação no CI", value: "segundos" },
         { label: "Falsos positivos", value: "0" },
@@ -573,6 +635,13 @@ export const projects: Project[] = [
   {
     id: "routineflow",
     tags: ["Backend"],
+    lineup: {
+      order: 11,
+      label: "Produto",
+      keyword: "YAML in",
+      keywordSize: 24,
+      stackLine: "Clean Architecture · React 18 · PWA",
+    },
     title: "RoutineFlow",
     description:
       "Sistema de gerenciamento de rotina pessoal orientado a dados com importação de rotinas via YAML/TXT, streaks engine, analytics por área e edição retroativa de check-ins.",
@@ -649,7 +718,7 @@ export const projects: Project[] = [
         },
       ],
       metrics: [
-        { label: "Testes automatizados", value: "156+" },
+        { label: "Testes automatizados", value: "156+", isTestTotal: true },
         { label: "Migrations Flyway", value: "11" },
         { label: "Endpoints REST", value: "35+" },
         { label: "Sprints entregues", value: "14" },
@@ -701,6 +770,13 @@ export const projects: Project[] = [
   {
     id: "postmortem-ai",
     tags: ["Backend", "AI / LLM"],
+    lineup: {
+      order: 10,
+      label: "IA / Backend",
+      keyword: "2-prompt",
+      keywordSize: 22,
+      stackLine: "OpenAI · Resilience4j · SHA-256",
+    },
     title: "PostMortem AI",
     description:
       "Gerador inteligente de post-mortems de incidentes a partir de logs e stack traces — do caos ao documento estruturado em segundos.",
@@ -777,7 +853,7 @@ export const projects: Project[] = [
         },
       ],
       metrics: [
-        { label: "Testes automatizados", value: "67" },
+        { label: "Testes automatizados", value: "67", isTestTotal: true },
         { label: "Formatos de log suportados", value: "3" },
         { label: "Prompts no pipeline", value: "2" },
         { label: "Alucinações eliminadas", value: "SHA-256" },
@@ -829,6 +905,13 @@ export const projects: Project[] = [
   {
     id: "ratemaster",
     tags: ["Developer Tooling", "Infra / DevOps"],
+    lineup: {
+      order: 4,
+      label: "Biblioteca",
+      keyword: "EVAL/Lua",
+      keywordSize: 26,
+      stackLine: "Java 21 · Redis · Micrometer · jqwik",
+    },
     title: "RateMaster",
     description:
       "Biblioteca Spring Boot Starter para rate limiting distribuído real — Redis + Lua atômico, annotation @RateLimit, fallback configurável e métricas Micrometer.",
@@ -904,7 +987,7 @@ export const projects: Project[] = [
         },
       ],
       metrics: [
-        { label: "Testes totais", value: "29+" },
+        { label: "Testes totais", value: "29+", isTestTotal: true },
         { label: "Property tests (jqwik)", value: "4" },
         { label: "Threads concorrentes testadas", value: "50" },
         { label: "CVEs críticos corrigidos", value: "3" },
@@ -969,6 +1052,13 @@ export const projects: Project[] = [
   {
     id: "agent-memory-store",
     tags: ["AI / LLM", "Backend"],
+    lineup: {
+      order: 6,
+      label: "IA / Backend",
+      keyword: "pgvector",
+      keywordSize: 24,
+      stackLine: "Spring AI · Spring Batch · RLS",
+    },
     title: "Agent Memory Store",
     description:
       "API REST de memória de longo prazo para agentes de IA — busca híbrida semântica + temporal com pgvector, consolidação via Spring Batch e multitenancy com RLS.",
@@ -1044,7 +1134,7 @@ export const projects: Project[] = [
         },
       ],
       metrics: [
-        { label: "Testes de integração", value: "11/11" },
+        { label: "Testes de integração", value: "11/11", isTestTotal: true },
         { label: "Queries por request crítico", value: "2" },
         { label: "Violações Clean Architecture", value: "0" },
         { label: "Gates de CI/CD", value: "4" },
@@ -1111,6 +1201,13 @@ export const projects: Project[] = [
   {
     id: "flowguard",
     tags: ["Developer Tooling", "Backend"],
+    lineup: {
+      order: 7,
+      label: "Plataforma",
+      keyword: "MurmurHash3",
+      keywordSize: 22,
+      stackLine: "Redis Pub/Sub · SSE · Angular 17",
+    },
     title: "FlowGuard",
     description:
       "Plataforma self-hosted de feature flags com rollout progressivo, avaliação local no SDK (zero latência), SSE em tempo real e suporte multi-tenant — alternativa ao LaunchDarkly para Spring Boot.",
@@ -1186,7 +1283,7 @@ export const projects: Project[] = [
         },
       ],
       metrics: [
-        { label: "Testes server", value: "21" },
+        { label: "Testes server", value: "21", isTestTotal: true },
         { label: "Validações MurmurHash3 (jqwik)", value: "4.000+" },
         { label: "Correções na revisão crítica", value: "29" },
         { label: "Commits (server + SDK)", value: "70+" },
@@ -1255,6 +1352,13 @@ export const projects: Project[] = [
   {
     id: "apiforge",
     tags: ["Developer Tooling", "AI / LLM"],
+    lineup: {
+      order: 9,
+      label: "Devtooling",
+      keyword: "SQL → API",
+      keywordSize: 24,
+      stackLine: "FreeMarker · OpenAI · SSE · Java 21",
+    },
     title: "APIForge",
     description:
       "Gerador de API REST completa a partir de schema SQL — entity, repository, service, controller, DTOs, testes, migrations Flyway e docker-compose em segundos.",
@@ -1329,7 +1433,7 @@ export const projects: Project[] = [
         },
       ],
       metrics: [
-        { label: "Testes totais", value: "48" },
+        { label: "Testes totais", value: "48", isTestTotal: true },
         { label: "Templates FreeMarker", value: "11" },
         { label: "Tipos PostgreSQL mapeados", value: "13" },
         { label: "Cenários de resiliência", value: "5" },
@@ -1396,6 +1500,13 @@ export const projects: Project[] = [
   {
     id: "java-mcp-hub",
     tags: ["AI / LLM", "Infra / DevOps"],
+    lineup: {
+      order: 5,
+      label: "IA / Infra",
+      keyword: "MCP",
+      keywordSize: 30,
+      stackLine: "Spring AI · WebFlux · GitHub Packages",
+    },
     title: "JavaMCPHub",
     description:
       "Servidor MCP de referência em Java 21 + Spring AI — conformidade verificada com spec MCP 2025-06-18, dual transport (stdio + Streamable HTTP), observabilidade Micrometer e publicado no GitHub Packages.",
@@ -1470,7 +1581,7 @@ export const projects: Project[] = [
         },
       ],
       metrics: [
-        { label: "Testes automatizados", value: "27" },
+        { label: "Testes automatizados", value: "27", isTestTotal: true },
         { label: "Gates de segurança CI", value: "5" },
         { label: "Transportes simultâneos", value: "2" },
         { label: "Bugs FindSecBugs", value: "0" },

@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { Search, SearchX } from "lucide-react";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { projects } from "@/data/projects";
 
@@ -55,40 +54,40 @@ export function ProjectsExplorer() {
   }
 
   return (
-    <main id="main-content" className="section-padding pt-32">
-      <div className="container-main">
+    <main id="main-content" className="container-page pb-32 pt-24">
+      <div className="mx-auto max-w-[1100px]">
         {/* ── Header ── */}
-        <div className="mb-12">
+        <header className="flex flex-col gap-6">
           <Link
             href="/#projects"
-            className="inline-flex items-center gap-2 font-mono text-xs text-muted hover:text-accent transition-colors duration-200 mb-8 group"
+            className="group inline-flex w-fit items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
           >
-            <span className="inline-block transition-transform duration-200 group-hover:-translate-x-1">
+            <span className="inline-block transition-transform duration-base ease-out group-hover:-translate-x-1">
               ←
             </span>
             Voltar
           </Link>
 
-          <div className="mb-5">
-            <SectionLabel animate={false}>projetos</SectionLabel>
-          </div>
-          <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4 leading-[1.1]">
-            Todos os projetos
+          <p className="eyebrow">Projetos</p>
+
+          <h1 className="display-lg text-[clamp(2.4rem,7vw,5rem)]">
+            Todos os projetos.
           </h1>
-          <p className="font-sans text-muted text-lg max-w-2xl">
-            {projects.length} projetos — sistemas distribuídos, developer tooling
-            e AI engineering.
+
+          <p className="max-w-[560px] text-[17px] leading-[1.55] text-muted [text-wrap:pretty]">
+            {projects.length} sistemas — mensageria, event sourcing, developer
+            tooling e AI engineering. Cada um nasceu de um problema concreto.
           </p>
-        </div>
+        </header>
 
         {/* ── Barra de filtro ── */}
-        <div className="mb-10 space-y-5">
+        <div className="mt-14 flex flex-col gap-5 border-t border-border pt-9">
           {/* Busca */}
           <div className="relative max-w-md">
             <Search
               size={15}
               strokeWidth={1.5}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted/60 pointer-events-none"
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-dim"
               aria-hidden
             />
             <input
@@ -97,12 +96,16 @@ export function ProjectsExplorer() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar projeto..."
               aria-label="Buscar projeto por nome ou tecnologia"
-              className="w-full font-mono text-sm bg-transparent text-foreground placeholder:text-muted/50 border border-white/10 rounded-sm pl-10 pr-4 py-2.5 transition-colors duration-200 focus:outline-none focus:border-accent"
+              className="field pl-11"
             />
           </div>
 
           {/* Chips de categoria */}
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoria">
+          <div
+            className="flex flex-wrap gap-2"
+            role="group"
+            aria-label="Filtrar por categoria"
+          >
             {CATEGORIES.map((cat) => {
               const active = activeCategory === cat;
               return (
@@ -111,10 +114,10 @@ export function ProjectsExplorer() {
                   onClick={() => setActiveCategory(cat)}
                   aria-pressed={active}
                   className={[
-                    "font-mono text-[0.65rem] tracking-[0.08em] uppercase px-3 py-1.5 rounded-sm border transition-colors duration-200",
+                    "h-9 rounded-full border px-4 font-mono text-[10.5px] uppercase tracking-[0.12em] transition-colors duration-base ease-out",
                     active
-                      ? "bg-accent/15 border-accent text-accent"
-                      : "border-white/[0.07] text-muted hover:border-accent hover:text-foreground",
+                      ? "border-accent bg-accent text-accent-fg"
+                      : "border-border text-muted hover:border-border-strong hover:text-foreground",
                   ].join(" ")}
                 >
                   {cat}
@@ -124,50 +127,51 @@ export function ProjectsExplorer() {
           </div>
 
           {/* Contador */}
-          <p className="font-mono text-[11px] text-muted/60">
+          <p className="tnum font-mono text-[11px] text-dim">
             Exibindo {filtered.length} de {projects.length} projetos
           </p>
         </div>
 
         {/* ── Grid de projetos ── */}
         {filtered.length > 0 ? (
-          <motion.div
-            layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6"
-          >
-            <AnimatePresence mode="popLayout">
-              {filtered.map((project) => (
-                <motion.div
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
-                  className="h-full"
-                >
-                  <ProjectCard
-                    project={project}
-                    index={projects.indexOf(project)}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+          /* MotionConfig fica aqui (e não no root layout) para que o framer-motion
+             carregue apenas nesta rota — a home fica fora do bundle da lib. */
+          <MotionConfig reducedMotion="user">
+            <motion.div
+              layout
+              className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              <AnimatePresence mode="popLayout">
+                {filtered.map((project) => (
+                  <motion.div
+                    key={project.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.97 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full"
+                  >
+                    <ProjectCard
+                      project={project}
+                      index={projects.indexOf(project)}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          </MotionConfig>
         ) : (
           /* ── Estado vazio ── */
-          <div className="flex flex-col items-center justify-center text-center py-24">
-            <SearchX size={32} strokeWidth={1.5} className="text-muted/50 mb-5" aria-hidden />
-            <p className="font-serif text-xl text-foreground mb-2">
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <SearchX size={32} strokeWidth={1.5} className="mb-5 text-dim" aria-hidden />
+            <p className="text-[21px] font-light tracking-[-0.02em]">
               Nenhum projeto encontrado
             </p>
-            <p className="font-sans text-sm text-muted mb-6 max-w-xs">
+            <p className="mt-2 max-w-xs text-[14.5px] text-muted">
               Tente outro filtro ou termo de busca.
             </p>
-            <button
-              onClick={clearFilters}
-              className="font-mono text-xs px-4 py-2 rounded-sm border border-white/15 text-foreground/80 hover:border-accent hover:text-accent transition-colors duration-200"
-            >
+            <button onClick={clearFilters} className="btn-pill-ghost mt-7">
               Limpar filtros
             </button>
           </div>
@@ -178,7 +182,7 @@ export function ProjectsExplorer() {
           <div className="mt-12 text-center">
             <button
               onClick={clearFilters}
-              className="font-mono text-xs text-muted hover:text-accent transition-colors duration-200"
+              className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
             >
               Limpar filtros ✕
             </button>

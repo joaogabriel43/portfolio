@@ -1,0 +1,48 @@
+/* RoutineFlow — Spacing, radii, shadows, motion
+ * 4px base grid. Radii centered on the product's 12px card language.
+ */
+:root {
+  /* ── Spacing scale (4px base) ───────────────────────────────────── */
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ── Radii ──────────────────────────────────────────────────────── */
+  --radius-xs:   6px;   /* checkboxes, small chips */
+  --radius-sm:   8px;   /* buttons, inputs */
+  --radius-md:   11px;  /* nested cards, list items */
+  --radius-lg:   12px;  /* cards — primary container radius */
+  --radius-xl:   16px;  /* modals, large panels */
+  --radius-full: 999px; /* pills, progress bars, avatars */
+
+  /* ── Borders ────────────────────────────────────────────────────── */
+  --border-width: 1px;
+
+  /* ── Shadows (subtle, dark-tuned) ───────────────────────────────── */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.40);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.45);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,0.55);
+  --shadow-pop: 0 8px 28px rgba(0,0,0,0.55), 0 0 0 1px var(--border);
+  --shadow-focus: 0 0 0 3px var(--accent-ring);
+
+  /* ── Layout ─────────────────────────────────────────────────────── */
+  --content-max: 768px;   /* max-w-3xl main column  @kind spacing */
+  --sidebar-w:   220px;   /* @kind spacing */
+  --bottomnav-h: 64px;    /* @kind spacing */
+
+  /* ── Motion ─────────────────────────────────────────────────────── */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);   /* @kind other */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);   /* @kind other */
+  --dur-fast:   120ms;   /* @kind other */
+  --dur-base:   200ms;   /* @kind other */
+  --dur-slow:   320ms;   /* @kind other */
+  --dur-bar:    700ms;   /* @kind other */
+}

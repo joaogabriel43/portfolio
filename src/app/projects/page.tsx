@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import { ProjectsExplorer } from "@/components/pages/ProjectsExplorer";
 
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export default function ProjectsPage() {
     <>
       <Navbar />
       <ProjectsExplorer />
+      <Footer />
     </>
   );
 }

@@ -1,83 +1,103 @@
-"use client";
-
 import Link from "next/link";
-import { AnimatedText } from "@/components/ui/AnimatedText";
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { ProjectCard } from "@/components/ui/ProjectCard";
-import { projects, type Project } from "@/data/projects";
-import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
+import { getLineup, type Project } from "@/data/projects";
+import { lineupSection } from "@/data/site";
 
-// ─── Layout logic ─────────────────────────────────────────────
-// A home exibe apenas os projetos featured (showcase):
-// Row 1: FortunAI  (8/12) + AuditVault (4/12)
-// Row 2: FlowGuard (6/12) + JavaMCPHub (6/12)
-const FEATURED_COL_SPANS: string[] = [
-  "col-span-full lg:col-span-8",
-  "col-span-full lg:col-span-4",
-  "col-span-full lg:col-span-6",
-  "col-span-full lg:col-span-6",
-];
+const lineup = getLineup();
 
-function buildFeaturedLayout(): Array<Project & { colSpan: string }> {
-  return projects
-    .filter((p) => p.featured)
-    .map((p, i) => ({
-      ...p,
-      colSpan: FEATURED_COL_SPANS[i] ?? "col-span-full lg:col-span-6",
-    }));
-}
-
-export function Projects() {
-  const layout = buildFeaturedLayout();
+// ─── Card ─────────────────────────────────────────────────────
+function LineupCard({ project, index }: { project: Project; index: number }) {
+  const { label, keyword, keywordSize, stackLine } = project.lineup;
+  const hasCaseStudy = Boolean(project.caseStudy);
+  const href = hasCaseStudy ? `/projects/${project.id}` : project.githubUrl;
 
   return (
-    <section id="projects" className="section-padding border-t border-border">
-      <Parallax3DLayer depth={0.8} className="container-main">
-        {/* ── Header ── */}
-        <div className="mb-14">
-          <div className="mb-5">
-            <SectionLabel index={4}>projetos</SectionLabel>
-          </div>
-          <AnimatedText
-            as="h2"
-            className="font-serif text-4xl md:text-5xl font-bold text-foreground"
-            delay={0.08}
-          >
-            Trabalhos selecionados
-          </AnimatedText>
-        </div>
+    <article className="group relative flex w-[min(290px,82vw)] shrink-0 snap-center flex-col rounded-[20px] bg-surface px-[26px] py-[30px] transition-colors duration-slow ease-out hover:bg-surface-2">
+      <p className="eyebrow-sm">
+        {String(index + 1).padStart(2, "0")} · {label}
+      </p>
 
-        {/* ── Featured grid ── */}
-        <div className="grid grid-cols-12 gap-5 lg:gap-6">
-          {layout.map((project, i) => (
-            <div
-              key={project.id}
-              className={`${project.colSpan} ${
-                // Subtle alternating surface tint for texture
-                i % 2 === 1 ? "lg:[&>article]:bg-[#0f0f0f]" : ""
-              }`}
-            >
-              <ProjectCard project={project} index={i} />
-            </div>
-          ))}
-        </div>
+      <p
+        className="flex h-[148px] items-center justify-center text-center font-mono font-normal leading-tight tracking-[-0.02em] text-accent"
+        style={{ fontSize: `${keywordSize}px` }}
+        aria-hidden
+      >
+        {keyword}
+      </p>
 
-        {/* ── CTA: ver todos os projetos ── */}
-        <div className="mt-14 flex flex-col items-center gap-4 text-center">
-          <p className="font-mono text-xs tracking-[0.1em] uppercase text-muted">
-            {projects.length} projetos no total
-          </p>
+      <h3 className="text-[21px] font-medium tracking-[-0.02em]">
+        {hasCaseStudy ? (
           <Link
-            href="/projects"
-            className="group inline-flex items-center justify-center gap-2 font-sans font-medium text-sm rounded-sm px-5 py-2.5 bg-transparent text-foreground/80 border border-white/15 hover:border-accent hover:text-accent transition-colors duration-200"
+            href={href}
+            className="after:absolute after:inset-0 after:rounded-[20px] after:content-['']"
           >
-            Ver todos os projetos
-            <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
-              →
-            </span>
+            {project.title}
           </Link>
-        </div>
-      </Parallax3DLayer>
+        ) : (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="after:absolute after:inset-0 after:rounded-[20px] after:content-['']"
+          >
+            {project.title}
+          </a>
+        )}
+      </h3>
+
+      <p className="mt-2.5 flex-1 text-[13.5px] leading-[1.5] text-muted [text-wrap:pretty]">
+        {project.description}
+      </p>
+
+      <p className="mt-5 font-mono text-[10.5px] leading-[1.5] text-muted">
+        {stackLine}
+      </p>
+
+      {hasCaseStudy && (
+        <a
+          href={project.githubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative z-10 mt-3 w-fit font-mono text-[10.5px] text-muted underline-offset-4 transition-colors duration-base ease-out hover:text-accent hover:underline"
+        >
+          GitHub ↗
+        </a>
+      )}
+    </article>
+  );
+}
+
+// ─── Seção ────────────────────────────────────────────────────
+export function Projects() {
+  return (
+    <section id="projects" className="pb-[130px] pt-24 md:pt-32 lg:pt-40">
+      <header className="container-page mx-auto flex max-w-[720px] flex-col items-center gap-5 text-center">
+        <p className="eyebrow">{lineupSection.eyebrow}</p>
+        <h2 className="display-lg text-[clamp(2.4rem,7vw,6rem)]">
+          {lineupSection.title}
+        </h2>
+        <p className="max-w-[520px] text-[16px] leading-[1.55] text-muted [text-wrap:pretty]">
+          {lineupSection.subtitle}
+        </p>
+      </header>
+
+      {/* Carrossel horizontal com scroll-snap */}
+      <div className="lineup mt-[72px] flex gap-5 overflow-x-auto pb-8 [padding-inline:max(24px,7vw)]">
+        {lineup.map((project, i) => (
+          <LineupCard key={project.id} project={project} index={i} />
+        ))}
+      </div>
+
+      <div className="container-page mt-4 flex justify-center">
+        <Link
+          href="/projects"
+          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
+        >
+          Explorar os {lineup.length} projetos
+          <span className="transition-transform duration-base ease-out group-hover:translate-x-1">
+            →
+          </span>
+        </Link>
+      </div>
     </section>
   );
 }

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/routineflow-design-system-8e3ffe0f-1374-40fe-b166-e035da777c9b/tokens/fonts.css">
+<script src="_ds/routineflow-design-system-8e3ffe0f-1374-40fe-b166-e035da777c9b/_ds_bundle.js"></script>
+<style>
+  :root { --ac: #2F5D75; }
+  html { scroll-behavior: smooth; }
+  body { margin:0; background:#fff; -webkit-font-smoothing:antialiased; }
+  ::selection { background: var(--ac); color:#fff; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: var(--ac); }
+  input, textarea { font-family: inherit; }
+  input:focus, textarea:focus { outline: none; border-color: var(--ac); }
+  @keyframes revealIn { from { opacity:0; transform:scale(1.03); clip-path:inset(14% 0 14% 0); }
+                        to   { opacity:1; transform:none;        clip-path:inset(0 0 0 0); } }
+  @supports (animation-timeline: view()) {
+    [data-reveal]:not([data-still]) { animation: revealIn linear both; animation-timeline: view(); animation-range: entry 5% cover 26%; }
+  }
+  .lineup::-webkit-scrollbar { height:2px; }
+  .lineup::-webkit-scrollbar-thumb { background:#D2D2D7; }
+</style>
+</helmet>
+
+<div style="font-family:Geist, system-ui, sans-serif; color:#1D1D1F; background:#fff; letter-spacing:-0.011em;">
+
+  <nav style="position:sticky; top:0; z-index:50; min-height:48px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:0 max(20px,5vw); background:rgba(255,255,255,0.82); backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid #D2D2D7;">
+    <a href="#topo" style="font-size:13px; font-weight:500; white-space:nowrap;">João Gabriel Nascimento</a>
+    <div style="display:flex; gap:22px; font-size:12px; color:#6E6E73; overflow-x:auto; white-space:nowrap;">
+      <a href="#sobre">Sobre</a>
+      <a href="#lineup">Projetos</a>
+      <a href="#specs">Especificações</a>
+      <a href="#experiencia">Experiência</a>
+      <a href="/blog">Blog</a>
+      <a href="#contato">Contato</a>
+    </div>
+  </nav>
+
+  <div id="topo"></div>
+
+  <!-- ── HERO ───────────────────────────────────────────── -->
+  <section data-screen-label="Hero" style="min-height:calc(100vh - 48px); display:flex; flex-direction:column; justify-content:center; padding:96px max(24px,7vw) 72px;">
+    <div data-reveal style="display:flex; flex-direction:column; gap:40px; max-width:1200px;">
+      <div style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.2em; color:#6E6E73;">DESENVOLVEDOR FULL-STACK SÊNIOR · PORTO ALEGRE</div>
+      <h1 style="margin:0; font-size:clamp(3.2rem, 10.5vw, 9.5rem); font-weight:300; line-height:0.9; letter-spacing:-0.05em;">Sistemas<br>distribuídos.</h1>
+      <div style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:36px; border-top:1px solid #D2D2D7; padding-top:28px;">
+        <p style="margin:0; max-width:440px; font-size:17px; line-height:1.55; color:#6E6E73; text-wrap:pretty;">Java, Spring Boot e arquitetura de eventos. Onze sistemas construídos com Event Sourcing, CQRS, Outbox Pattern e rate limiting distribuído — todos com código aberto.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:12px;">
+          <a href="#lineup" style="display:inline-flex; align-items:center; height:46px; padding:0 24px; border-radius:999px; background:var(--ac); color:#fff; font-size:14px; font-weight:500;">Ver o lineup</a>
+          <a href="#contato" style="display:inline-flex; align-items:center; height:46px; padding:0 24px; border-radius:999px; border:1px solid #D2D2D7; font-size:14px; font-weight:500;">Contato</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAIXA DE NÚMEROS ───────────────────────────────── -->
+  <section data-screen-label="Números" style="background:#F5F5F7; border-top:1px solid #D2D2D7; border-bottom:1px solid #D2D2D7; padding:0 max(24px,7vw);">
+    <div data-reveal style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:1px; background:#D2D2D7;">
+      <div style="background:#F5F5F7; padding:34px 0; display:flex; flex-direction:column; gap:8px;">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">PROJETOS</span>
+        <span style="font-family:'Geist Mono', monospace; font-size:clamp(1.7rem,3.4vw,2rem); font-variant-numeric:tabular-nums;">11</span>
+      </div>
+      <div style="background:#F5F5F7; padding:34px 0; display:flex; flex-direction:column; gap:8px;">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">STACK BASE</span>
+        <span style="font-family:'Geist Mono', monospace; font-size:clamp(1.7rem,3.4vw,2rem);">Java 21</span>
+      </div>
+      <div style="background:#F5F5F7; padding:34px 0; display:flex; flex-direction:column; gap:8px;">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">TESTES ESCRITOS</span>
+        <span style="font-family:'Geist Mono', monospace; font-size:clamp(1.7rem,3.4vw,2rem); font-variant-numeric:tabular-nums;">670+</span>
+      </div>
+      <div style="background:#F5F5F7; padding:34px 0; display:flex; flex-direction:column; gap:8px;">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">EXPERIÊNCIA</span>
+        <span style="font-family:'Geist Mono', monospace; font-size:clamp(1.7rem,3.4vw,2rem);">desde 2022</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SOBRE ──────────────────────────────────────────── -->
+  <section id="sobre" data-screen-label="Sobre" style="padding:160px max(24px,7vw); display:flex; justify-content:center; border-bottom:1px solid #D2D2D7;">
+    <div data-reveal style="max-width:880px; display:flex; flex-direction:column; gap:52px;">
+      <div style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.2em; color:#6E6E73;">SOBRE</div>
+      <p style="margin:0; font-size:clamp(1.5rem, 3.4vw, 2.6rem); font-weight:300; line-height:1.28; letter-spacing:-0.025em; text-wrap:pretty;">Escrever a funcionalidade é a parte fácil. O trabalho de verdade começa quando o processo cai no meio de uma transação, quando a API externa devolve 429, quando duas instâncias leem o mesmo contador no mesmo milissegundo.</p>
+      <div style="display:flex; flex-wrap:wrap; gap:40px; align-items:flex-start;">
+        <img data-photo src="assets/avatar.jpg" alt="João Gabriel Nascimento" style="width:180px; height:220px; object-fit:cover; border-radius:14px; flex:0 0 auto; background:#F5F5F7;">
+        <p style="margin:0; flex:1 1 320px; min-width:280px; font-size:17px; line-height:1.65; color:#6E6E73; text-wrap:pretty;">Trabalho com C#/.NET, Angular e SQL Server em ambiente corporativo desde 2023, sustentando sistemas internos críticos em produção. Em paralelo, venho aprofundando back-end em Java e Spring Boot através de onze projetos próprios — cada um escolhido para atacar um problema distribuído específico e documentado como case study, com decisões, trade-offs e o que quebrou no caminho. Estudo Sistemas de Informação na Unisinos.</p>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:32px; border-top:1px solid #D2D2D7; padding-top:32px;">
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">ATUAL</span><span style="font-size:15px;">Engenheiro de Aplicativos, Intermidia</span></div>
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">FORMAÇÃO</span><span style="font-size:15px;">Sistemas de Informação, Unisinos</span></div>
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">IDIOMAS</span><span style="font-size:15px;">Português nativo · Inglês conversação</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LINEUP ─────────────────────────────────────────── -->
+  <section id="lineup" data-screen-label="Lineup" style="padding:160px 0 130px; border-bottom:1px solid #D2D2D7;">
+    <div data-reveal style="padding:0 max(24px,7vw); display:flex; flex-direction:column; gap:22px; align-items:center; text-align:center;">
+      <div style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.2em; color:#6E6E73;">O LINEUP</div>
+      <h2 style="margin:0; font-size:clamp(2.4rem, 7vw, 6rem); font-weight:300; line-height:0.94; letter-spacing:-0.045em;">Onze sistemas.</h2>
+      <p style="margin:0; max-width:520px; font-size:17px; line-height:1.55; color:#6E6E73;">Cada um resolve um problema de infraestrutura diferente. Deslize para ver a linha completa.</p>
+    </div>
+
+    <div class="lineup" data-reveal style="margin-top:72px; display:flex; gap:20px; overflow-x:auto; scroll-snap-type:x mandatory; padding:0 max(24px,7vw) 32px;">
+
+      <a href="https://github.com/joaogabriel43/finassistant" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">01 · IA / BACKEND</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:26px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">Markowitz</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">FortunAI</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Assistente financeiro conversacional. DDD, hexagonal, 10.000 simulações Monte Carlo.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">Java 17 · Next.js · Gemini · PostgreSQL</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/AuditVault" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">02 · BACKEND</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:30px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">CQRS</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">AuditVault</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Auditoria plug-and-play via AOP. Event Sourcing com snapshots — leitura O(1).</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">Event Sourcing · Elasticsearch · SSE</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/notifyflow" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">03 · MENSAGERIA</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:28px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">Outbox</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">NotifyFlow</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Notificações multi-canal com fallback EMAIL → SMS → PUSH e DLQ com retry.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">RabbitMQ · Resilience4j · Angular 17</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/RateMaster" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">04 · BIBLIOTECA</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:26px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">EVAL/Lua</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">RateMaster</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Spring Boot Starter de rate limiting distribuído. Token bucket atômico no Redis.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">Java 21 · Redis · Micrometer · jqwik</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/java-mcp-hub" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">05 · IA / INFRA</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:30px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">MCP</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">JavaMCPHub</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Servidor MCP de referência em Java. Conformidade verificada com a spec 2025-06-18.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">Spring AI · WebFlux · GitHub Packages</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/agent-memory-store" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">06 · IA / BACKEND</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:24px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">pgvector</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">Agent Memory Store</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Memória de longo prazo para agentes. Busca híbrida: 70% semântica, 30% recência.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">Spring AI · Spring Batch · RLS</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/flowguard-server" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">07 · PLATAFORMA</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:22px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">MurmurHash3</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">FlowGuard</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Feature flags self-hosted. Avaliação local no SDK, zero latência por request.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">Redis Pub/Sub · SSE · Angular 17</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/ContractGuard" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">08 · DEVTOOLING</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:26px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">AST diff</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">ContractGuard</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Detecta breaking changes em OpenAPI no CI e bloqueia o merge com exit 1.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">Swagger Parser · Testcontainers · GH Actions</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/APIForge" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">09 · DEVTOOLING</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:24px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">SQL → API</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">APIForge</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">De um CREATE TABLE a um projeto Spring Boot completo, com testes e migrations.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">FreeMarker · OpenAI · SSE · Java 21</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/postmortem-ai" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">10 · IA / BACKEND</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:22px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">2-prompt</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">PostMortem AI</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Logs viram post-mortem estruturado. Pipeline de dois prompts contra alucinação.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">OpenAI · Resilience4j · SHA-256</span>
+      </a>
+
+      <a href="https://github.com/joaogabriel43/RoutineFlow" style="scroll-snap-align:center; flex:0 0 min(290px, 82vw); display:flex; flex-direction:column; background:#F5F5F7; border-radius:20px; padding:30px 26px; transition:background .35s cubic-bezier(.16,1,.3,1);" style-hover="background:#EDEDF0">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">11 · PRODUTO</span>
+        <div style="height:148px; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Geist Mono', monospace; font-size:24px; font-weight:500; letter-spacing:-0.03em; color:var(--ac);">YAML in</span></div>
+        <span style="font-size:21px; font-weight:500; letter-spacing:-0.02em;">RoutineFlow</span>
+        <p style="margin:10px 0 0; font-size:13.5px; line-height:1.5; color:#6E6E73; flex:1;">Rotina pessoal orientada a dados. Import por arquivo, histórico imutável, streaks.</p>
+        <span style="margin-top:20px; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">Clean Architecture · React 18 · PWA</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ── PRODUTO EM DESTAQUE ────────────────────────────── -->
+  <section data-screen-label="Destaque" style="padding:160px max(24px,7vw); background:#F5F5F7; border-bottom:1px solid #D2D2D7;">
+    <div data-reveal style="max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:72px;">
+      <div style="display:flex; flex-direction:column; gap:20px; align-items:center; text-align:center;">
+        <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.2em; color:#6E6E73;">EM DESTAQUE</span>
+        <h2 style="margin:0; font-size:clamp(2.6rem, 9vw, 7.5rem); font-weight:300; letter-spacing:-0.05em; line-height:0.9;">AuditVault</h2>
+        <p style="margin:0; max-width:600px; font-size:19px; line-height:1.5; color:#6E6E73; text-wrap:pretty;">Um motor de auditoria que se acopla a qualquer API REST sem que o código de negócio saiba que está sendo auditado.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:1px; background:#D2D2D7;">
+        <div style="background:#F5F5F7; padding:34px 0; display:flex; flex-direction:column; gap:10px; align-items:center;">
+          <span style="font-family:'Geist Mono', monospace; font-size:clamp(2.2rem,5vw,3.6rem); letter-spacing:-0.04em; color:var(--ac); font-variant-numeric:tabular-nums;">0ms</span>
+          <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73; text-align:center;">LATÊNCIA ADICIONAL</span>
+        </div>
+        <div style="background:#F5F5F7; padding:34px 0; display:flex; flex-direction:column; gap:10px; align-items:center;">
+          <span style="font-family:'Geist Mono', monospace; font-size:clamp(2.2rem,5vw,3.6rem); letter-spacing:-0.04em; color:var(--ac);">O(1)</span>
+          <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73; text-align:center;">CUSTO DE LEITURA</span>
+        </div>
+        <div style="background:#F5F5F7; padding:34px 0; display:flex; flex-direction:column; gap:10px; align-items:center;">
+          <span style="font-family:'Geist Mono', monospace; font-size:clamp(2.2rem,5vw,3.6rem); letter-spacing:-0.04em; color:var(--ac); font-variant-numeric:tabular-nums;">50</span>
+          <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73; text-align:center;">EVENTOS / SNAPSHOT</span>
+        </div>
+        <div style="background:#F5F5F7; padding:34px 0; display:flex; flex-direction:column; gap:10px; align-items:center;">
+          <span style="font-family:'Geist Mono', monospace; font-size:clamp(2.2rem,5vw,3.6rem); letter-spacing:-0.04em; color:var(--ac); font-variant-numeric:tabular-nums;">25s</span>
+          <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73; text-align:center;">HEARTBEAT SSE</span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:48px;">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:var(--ac);">DECISÃO 01</span>
+          <span style="font-size:19px; font-weight:500; letter-spacing:-0.02em;">AOP com @Auditable</span>
+          <p style="margin:0; font-size:14.5px; line-height:1.6; color:#6E6E73; text-wrap:pretty;">Interceptadores capturam as mutações de estado automaticamente. Zero intrusão, ofuscação de PII aplicada nos campos marcados.</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:var(--ac);">DECISÃO 02</span>
+          <span style="font-size:19px; font-weight:500; letter-spacing:-0.02em;">Snapshots a cada 50 eventos</span>
+          <p style="margin:0; font-size:14.5px; line-height:1.6; color:#6E6E73; text-wrap:pretty;">Event Sourcing puro lê em O(N). Consolidar o estado periodicamente limita a reconstrução a 50 iterações — O(1) na prática.</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:var(--ac);">DECISÃO 03</span>
+          <span style="font-size:19px; font-weight:500; letter-spacing:-0.02em;">SSE em vez de WebSocket</span>
+          <p style="margin:0; font-size:14.5px; line-height:1.6; color:#6E6E73; text-wrap:pretty;">O fluxo é unidirecional. Um ping a cada 25s mantém a conexão viva atrás de proxies e load balancers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ESPECIFICAÇÕES ─────────────────────────────────── -->
+  <section id="specs" data-screen-label="Especificações" style="padding:160px max(24px,7vw); border-bottom:1px solid #D2D2D7;">
+    <div data-reveal style="max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:56px;">
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.2em; color:#6E6E73;">ESPECIFICAÇÕES TÉCNICAS</span>
+        <h2 style="margin:0; font-size:clamp(2.2rem, 6vw, 5rem); font-weight:300; letter-spacing:-0.045em; line-height:0.96;">O que tem<br>por dentro.</h2>
+      </div>
+
+      <div style="display:flex; flex-direction:column;">
+        <div style="display:grid; grid-template-columns:minmax(110px,180px) 1fr; gap:clamp(16px,3vw,32px); padding:26px 0; border-top:1px solid #D2D2D7;">
+          <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.14em; color:#6E6E73; padding-top:6px;">BACKEND</span>
+          <span style="font-size:clamp(1rem,2.2vw,1.5rem); font-weight:300; line-height:1.45; letter-spacing:-0.02em;">Java 17 · Java 21 · Spring Boot 3.2 · Spring Security 6 · Spring Data JPA · Spring Batch · Spring AI · C# · .NET · ASP.NET Core</span>
+        </div>
+        <div style="display:grid; grid-template-columns:minmax(110px,180px) 1fr; gap:clamp(16px,3vw,32px); padding:26px 0; border-top:1px solid #D2D2D7;">
+          <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.14em; color:#6E6E73; padding-top:6px;">ARQUITETURA</span>
+          <span style="font-size:clamp(1rem,2.2vw,1.5rem); font-weight:300; line-height:1.45; letter-spacing:-0.02em;">Clean Architecture · Hexagonal / Ports &amp; Adapters · DDD · Event Sourcing · CQRS · Outbox Pattern · SOLID</span>
+        </div>
+        <div style="display:grid; grid-template-columns:minmax(110px,180px) 1fr; gap:clamp(16px,3vw,32px); padding:26px 0; border-top:1px solid #D2D2D7;">
+          <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.14em; color:#6E6E73; padding-top:6px;">DADOS</span>
+          <span style="font-size:clamp(1rem,2.2vw,1.5rem); font-weight:300; line-height:1.45; letter-spacing:-0.02em;">PostgreSQL 16 · JSONB · pgvector · SQL Server · Elasticsearch · Redis · Flyway · Stored procedures</span>
+        </div>
+        <div style="display:grid; grid-template-columns:minmax(110px,180px) 1fr; gap:clamp(16px,3vw,32px); padding:26px 0; border-top:1px solid #D2D2D7;">
+          <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.14em; color:#6E6E73; padding-top:6px;">MENSAGERIA</span>
+          <span style="font-size:clamp(1rem,2.2vw,1.5rem); font-weight:300; line-height:1.45; letter-spacing:-0.02em;">RabbitMQ · Dead Letter Queue · Redis Pub/Sub · SSE · WebSocket · Resilience4j</span>
+        </div>
+        <div style="display:grid; grid-template-columns:minmax(110px,180px) 1fr; gap:clamp(16px,3vw,32px); padding:26px 0; border-top:1px solid #D2D2D7;">
+          <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.14em; color:#6E6E73; padding-top:6px;">FRONTEND</span>
+          <span style="font-size:clamp(1rem,2.2vw,1.5rem); font-weight:300; line-height:1.45; letter-spacing:-0.02em;">TypeScript · Angular 17 (Signals, standalone) · React 18 · Next.js · Tailwind CSS · Acessibilidade</span>
+        </div>
+        <div style="display:grid; grid-template-columns:minmax(110px,180px) 1fr; gap:clamp(16px,3vw,32px); padding:26px 0; border-top:1px solid #D2D2D7;">
+          <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.14em; color:#6E6E73; padding-top:6px;">TESTES</span>
+          <span style="font-size:clamp(1rem,2.2vw,1.5rem); font-weight:300; line-height:1.45; letter-spacing:-0.02em;">JUnit 5 · Mockito · Testcontainers · WireMock · jqwik (property-based) · Vitest · TDD</span>
+        </div>
+        <div style="display:grid; grid-template-columns:minmax(110px,180px) 1fr; gap:clamp(16px,3vw,32px); padding:26px 0; border-top:1px solid #D2D2D7; border-bottom:1px solid #D2D2D7;">
+          <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.14em; color:#6E6E73; padding-top:6px;">DEVOPS</span>
+          <span style="font-size:clamp(1rem,2.2vw,1.5rem); font-weight:300; line-height:1.45; letter-spacing:-0.02em;">Docker multi-stage · GitHub Actions · Railway · Vercel · Terraform · Ansible · OWASP · Trivy · GitLeaks</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EXPERIÊNCIA ────────────────────────────────────── -->
+  <section id="experiencia" data-screen-label="Experiência" style="padding:160px max(24px,7vw); background:#F5F5F7; border-bottom:1px solid #D2D2D7;">
+    <div data-reveal style="max-width:1000px; margin:0 auto; display:flex; flex-direction:column; gap:64px;">
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.2em; color:#6E6E73;">EXPERIÊNCIA</span>
+        <h2 style="margin:0; font-size:clamp(2.2rem, 6vw, 5rem); font-weight:300; letter-spacing:-0.045em; line-height:0.96;">Onde estive.</h2>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:clamp(24px,4vw,56px); border-top:1px solid #D2D2D7; padding-top:36px;">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:var(--ac);">ABR 2023 — PRESENTE</span>
+          <span style="font-size:clamp(1.4rem,2.6vw,1.9rem); font-weight:300; letter-spacing:-0.03em;">Engenheiro de Aplicativos</span>
+          <span style="font-size:15px; color:#6E6E73;">Intermidia · Porto Alegre, RS</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <p style="margin:0; font-size:15px; line-height:1.65; color:#6E6E73; text-wrap:pretty;">Desenvolvimento e manutenção de sistemas internos críticos, full-stack com C#, Java, .NET e Angular em ambiente corporativo.</p>
+          <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:9px; font-size:14.5px; line-height:1.55; color:#6E6E73;">
+            <li>Criação, otimização e manutenção de queries, stored procedures e funções em SQL Server</li>
+            <li>Sustentação do sistema MobiliVendas garantindo performance e estabilidade em produção</li>
+            <li>Análise, diagnóstico e correção de bugs com versionamento via Git</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:clamp(24px,4vw,56px); border-top:1px solid #D2D2D7; padding-top:36px;">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">MAR 2022 — MAR 2023</span>
+          <span style="font-size:clamp(1.4rem,2.6vw,1.9rem); font-weight:300; letter-spacing:-0.03em;">Help Desk</span>
+          <span style="font-size:15px; color:#6E6E73;">Compuletra · Porto Alegre, RS</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <p style="margin:0; font-size:15px; line-height:1.65; color:#6E6E73; text-wrap:pretty;">Suporte técnico nível 1 e 2 para o sistema Vistoria Pro, com foco em resolução de problemas e documentação de soluções.</p>
+          <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:9px; font-size:14.5px; line-height:1.55; color:#6E6E73;">
+            <li>Atualizações, configurações e manutenção de ambientes</li>
+            <li>Produção de documentação técnica de soluções e procedimentos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:22px; border-top:1px solid #D2D2D7; padding-top:36px;">
+        <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">CERTIFICAÇÕES</span>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:20px 32px;">
+          <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline;"><span style="font-size:15px;">Formação Java Web com Spring Boot</span><span style="font-family:'Geist Mono', monospace; font-size:11px; color:#6E6E73; white-space:nowrap;">Alura · 2024</span></div>
+          <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline;"><span style="font-size:15px;">Formação Java com Orientação a Objetos</span><span style="font-family:'Geist Mono', monospace; font-size:11px; color:#6E6E73; white-space:nowrap;">Alura · 2024</span></div>
+          <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline;"><span style="font-size:15px;">Formação Desenvolvimento Front-end</span><span style="font-family:'Geist Mono', monospace; font-size:11px; color:#6E6E73; white-space:nowrap;">Alura · 2023</span></div>
+          <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline;"><span style="font-size:15px;">C# e Orientação a Objetos</span><span style="font-family:'Geist Mono', monospace; font-size:11px; color:#6E6E73; white-space:nowrap;">Alura · 2022</span></div>
+          <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline;"><span style="font-size:15px;">IT Essentials</span><span style="font-family:'Geist Mono', monospace; font-size:11px; color:#6E6E73; white-space:nowrap;">Cisco · 2019</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTATO ────────────────────────────────────────── -->
+  <section id="contato" data-screen-label="Contato" style="padding:170px max(24px,7vw) 110px; display:flex; justify-content:center;">
+    <div data-reveal style="max-width:980px; width:100%; display:flex; flex-direction:column; gap:56px;">
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <span style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.2em; color:#6E6E73;">CONTATO</span>
+        <h2 style="margin:0; font-size:clamp(2.4rem, 7vw, 6rem); font-weight:300; letter-spacing:-0.05em; line-height:0.94;">Vamos conversar.</h2>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:clamp(32px,5vw,64px); align-items:start;">
+        <form onSubmit="{{ enviar }}" style="display:flex; flex-direction:column; gap:16px;">
+          <input name="nome" required="{{ obrigatorio }}" placeholder="Nome" style="height:48px; padding:0 16px; border:1px solid #D2D2D7; border-radius:10px; font-size:15px; color:#1D1D1F; background:#fff;">
+          <input name="email" type="email" required="{{ obrigatorio }}" placeholder="E-mail" style="height:48px; padding:0 16px; border:1px solid #D2D2D7; border-radius:10px; font-size:15px; color:#1D1D1F; background:#fff;">
+          <textarea name="mensagem" required="{{ obrigatorio }}" rows="5" placeholder="Mensagem" style="padding:14px 16px; border:1px solid #D2D2D7; border-radius:10px; font-size:15px; line-height:1.5; color:#1D1D1F; background:#fff; resize:vertical;"></textarea>
+          <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+            <button type="submit" style="height:46px; padding:0 26px; border:none; border-radius:999px; background:var(--ac); color:#fff; font-family:inherit; font-size:14px; font-weight:500; cursor:pointer;">Enviar mensagem</button>
+            <span data-status style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.14em; color:var(--ac);"></span>
+          </div>
+        </form>
+
+        <div style="display:flex; flex-direction:column; gap:28px;">
+          <a href="mailto:joaogabrielnb43@gmail.com" style="font-size:clamp(1.1rem,2.4vw,1.6rem); font-weight:300; letter-spacing:-0.03em; color:var(--ac); border-bottom:1px solid #D2D2D7; padding-bottom:14px; word-break:break-all;">joaogabrielnb43@gmail.com</a>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:24px;">
+            <a href="https://github.com/joaogabriel43" style="display:flex; flex-direction:column; gap:6px;"><span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">GITHUB</span><span style="font-size:15px;">joaogabriel43</span></a>
+            <a href="https://www.linkedin.com/in/joão-gabriel-borba/" style="display:flex; flex-direction:column; gap:6px;"><span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">LINKEDIN</span><span style="font-size:15px;">joão-gabriel-borba</span></a>
+            <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">TELEFONE</span><span style="font-size:15px;">(51) 99502-8300</span></div>
+            <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.18em; color:#6E6E73;">LOCAL</span><span style="font-size:15px;">Porto Alegre, RS</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="padding:30px max(24px,7vw); border-top:1px solid #D2D2D7; display:flex; flex-wrap:wrap; gap:14px; justify-content:space-between; font-family:'Geist Mono', monospace; font-size:10.5px; color:#6E6E73;">
+    <span>© 2026 JOÃO GABRIEL NASCIMENTO</span>
+    <span>PORTO ALEGRE · RS · BRASIL</span>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#2F5D75&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#2F5D75&quot;,&quot;#0B5D46&quot;,&quot;#3A3A3F&quot;,&quot;#1D4E89&quot;],&quot;section&quot;:&quot;Direção&quot;},&quot;mostrarFoto&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Conteúdo&quot;},&quot;reveal&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Movimento&quot;}}">
+class Component extends DCLogic {
+  componentDidMount() { this.sync(); }
+  componentDidUpdate() { this.sync(); }
+
+  sync() {
+    document.documentElement.style.setProperty('--ac', this.props.accent ?? '#2F5D75');
+    document.querySelectorAll('[data-reveal]').forEach(n => {
+      if (this.props.reveal === false) n.setAttribute('data-still', '1'); else n.removeAttribute('data-still');
+    });
+    const foto = document.querySelector('[data-photo]');
+    if (foto) foto.style.display = this.props.mostrarFoto === false ? 'none' : '';
+  }
+
+  renderVals() {
+    return {
+      obrigatorio: true,
+      enviar: (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const s = form.querySelector('[data-status]');
+        const nome = form.nome.value.trim(), email = form.email.value.trim(), msg = form.mensagem.value.trim();
+        if (!nome || !email || !msg || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          if (s) { s.style.color = '#B3261E'; s.textContent = 'PREENCHA NOME, E-MAIL VÁLIDO E MENSAGEM'; }
+          return;
+        }
+        if (s) { s.style.color = ''; s.textContent = 'MENSAGEM ENVIADA — RETORNO EM ATÉ 24H'; }
+        form.reset();
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

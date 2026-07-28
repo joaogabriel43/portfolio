@@ -66,26 +66,26 @@ function validate(body: unknown): ContactPayload | null {
 // ─── Email HTML template ──────────────────────────────────────
 function buildEmailHtml(data: ContactPayload): string {
   return `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #f0ece4; background: #0a0a0a; padding: 32px; border-radius: 4px;">
-      <h2 style="color: #c9b97a; margin: 0 0 24px; font-size: 18px; font-weight: 600;">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; color: #1d1d1f; background: #ffffff; padding: 32px; border: 1px solid #d2d2d7; border-radius: 12px;">
+      <h2 style="color: #2f5d75; margin: 0 0 24px; font-size: 18px; font-weight: 500; letter-spacing: -0.02em;">
         Nova mensagem do portfólio
       </h2>
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
-          <td style="padding: 8px 0; color: #6b6b6b; width: 80px; font-size: 13px;">Nome</td>
+          <td style="padding: 8px 0; color: #6e6e73; width: 80px; font-size: 13px;">Nome</td>
           <td style="padding: 8px 0; font-size: 13px;">${data.name}</td>
         </tr>
         <tr>
-          <td style="padding: 8px 0; color: #6b6b6b; font-size: 13px;">Email</td>
+          <td style="padding: 8px 0; color: #6e6e73; font-size: 13px;">Email</td>
           <td style="padding: 8px 0; font-size: 13px;">${data.email}</td>
         </tr>
         <tr>
-          <td style="padding: 8px 0; color: #6b6b6b; font-size: 13px;">Assunto</td>
+          <td style="padding: 8px 0; color: #6e6e73; font-size: 13px;">Assunto</td>
           <td style="padding: 8px 0; font-size: 13px;">${data.subject}</td>
         </tr>
       </table>
-      <hr style="border: none; border-top: 1px solid #2a2a2a; margin: 20px 0;" />
-      <p style="font-size: 13px; line-height: 1.7; color: #f0ece4; white-space: pre-wrap;">${data.message}</p>
+      <hr style="border: none; border-top: 1px solid #d2d2d7; margin: 20px 0;" />
+      <p style="font-size: 14px; line-height: 1.7; color: #1d1d1f; white-space: pre-wrap;">${data.message}</p>
     </div>
   `;
 }
@@ -137,15 +137,28 @@ export async function POST(
   try {
     const resend = new Resend(apiKey);
 
-    await resend.emails.send({
+    // ATENÇÃO: o SDK do Resend NÃO lança exceção quando a API rejeita o envio —
+    // ele resolve com { data: null, error }. Ignorar esse retorno faz a rota
+    // responder 200 mesmo quando nenhum e-mail foi enviado (falso sucesso).
+    const { data, error } = await resend.emails.send({
       from: "Portfolio <onboarding@resend.dev>",
       to: [toEmail],
       replyTo: payload.email,
       subject: `[Portfólio] ${payload.subject}`,
       html: buildEmailHtml(payload),
     });
+
+    if (error) {
+      console.error("[contact] Resend rejeitou o envio:", error.name, "-", error.message);
+      return NextResponse.json(
+        { error: "Falha ao enviar mensagem. Tente novamente." },
+        { status: 502 }
+      );
+    }
+
+    console.info("[contact] E-mail enviado. id:", data?.id);
   } catch (err) {
-    // Log the type but not message content
+    // Falha de rede/transporte — o SDK só lança nesses casos
     console.error("[contact] Email send failed:", (err as Error).name);
     return NextResponse.json(
       { error: "Falha ao enviar mensagem. Tente novamente." },

@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { motion, AnimatePresence } from "framer-motion";
-import { Check } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────
 interface FormFields {
@@ -18,8 +16,15 @@ type SubmitStatus = "idle" | "loading" | "success" | "error";
 // ─── Spinner ──────────────────────────────────────────────────
 function Spinner() {
   return (
-    <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
+    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="3"
+        className="opacity-25"
+      />
       <path
         fill="currentColor"
         className="opacity-75"
@@ -29,9 +34,26 @@ function Spinner() {
   );
 }
 
+// ─── Mensagem de erro de validação ────────────────────────────
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p role="alert" className="mt-1.5 font-mono text-[11px] text-negative">
+      {message}
+    </p>
+  );
+}
+
 // ─── ContactForm ──────────────────────────────────────────────
 export function ContactForm() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
+
+  // Antes da hidratação não existe handler de submit: um clique no botão
+  // dispararia o submit NATIVO do browser, navegando para
+  // /?name=...&email=...&message=... e vazando os dados na URL.
+  // Manter o botão desabilitado no HTML do servidor elimina essa janela.
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
 
   const {
     register,
@@ -62,56 +84,58 @@ export function ContactForm() {
     }
   };
 
-  const inputBase = [
-    "w-full bg-transparent border border-white/10 rounded-sm",
-    "px-4 py-3 font-sans text-sm text-foreground",
-    "placeholder:text-muted/50",
-    "focus:outline-none focus:border-accent",
-    "transition-colors duration-200",
-  ].join(" ");
-
   const isLoading = status === "loading";
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      {/* Name */}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3.5" noValidate>
       <div>
+        <label htmlFor="contact-name" className="sr-only">
+          Nome
+        </label>
         <input
+          id="contact-name"
           {...register("name", {
             required: "Nome é obrigatório",
             minLength: { value: 2, message: "Mínimo 2 caracteres" },
           })}
           placeholder="Nome"
+          autoComplete="name"
           disabled={isLoading}
           aria-invalid={!!errors.name}
-          className={inputBase}
+          className="field"
         />
-        {errors.name && (
-          <p className="font-mono text-[11px] text-red-400 mt-1.5">{errors.name.message}</p>
-        )}
+        <FieldError message={errors.name?.message} />
       </div>
 
-      {/* Email */}
       <div>
+        <label htmlFor="contact-email" className="sr-only">
+          Email
+        </label>
         <input
+          id="contact-email"
           {...register("email", {
             required: "Email é obrigatório",
-            pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Email inválido" },
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "Email inválido",
+            },
           })}
           type="email"
           placeholder="Email"
+          autoComplete="email"
           disabled={isLoading}
           aria-invalid={!!errors.email}
-          className={inputBase}
+          className="field"
         />
-        {errors.email && (
-          <p className="font-mono text-[11px] text-red-400 mt-1.5">{errors.email.message}</p>
-        )}
+        <FieldError message={errors.email?.message} />
       </div>
 
-      {/* Subject */}
       <div>
+        <label htmlFor="contact-subject" className="sr-only">
+          Assunto
+        </label>
         <input
+          id="contact-subject"
           {...register("subject", {
             required: "Assunto é obrigatório",
             minLength: { value: 3, message: "Mínimo 3 caracteres" },
@@ -119,16 +143,17 @@ export function ContactForm() {
           placeholder="Assunto"
           disabled={isLoading}
           aria-invalid={!!errors.subject}
-          className={inputBase}
+          className="field"
         />
-        {errors.subject && (
-          <p className="font-mono text-[11px] text-red-400 mt-1.5">{errors.subject.message}</p>
-        )}
+        <FieldError message={errors.subject?.message} />
       </div>
 
-      {/* Message */}
       <div>
+        <label htmlFor="contact-message" className="sr-only">
+          Mensagem
+        </label>
         <textarea
+          id="contact-message"
           {...register("message", {
             required: "Mensagem é obrigatória",
             minLength: { value: 10, message: "Mínimo 10 caracteres" },
@@ -137,58 +162,36 @@ export function ContactForm() {
           rows={5}
           disabled={isLoading}
           aria-invalid={!!errors.message}
-          className={`${inputBase} resize-none`}
+          className="field"
         />
-        {errors.message && (
-          <p className="font-mono text-[11px] text-red-400 mt-1.5">{errors.message.message}</p>
-        )}
+        <FieldError message={errors.message?.message} />
       </div>
 
-      {/* Submit */}
-      <motion.button
-        type="submit"
-        disabled={isLoading}
-        className={[
-          "w-full flex items-center justify-center gap-2.5",
-          "px-5 py-3 rounded-sm font-sans font-medium text-sm",
-          "bg-accent text-background border border-accent",
-          "hover:bg-accent-dim hover:border-accent-dim",
-          "transition-colors duration-200 cursor-pointer",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
-        ].join(" ")}
-        whileHover={!isLoading ? { y: -1 } : undefined}
-        whileTap={!isLoading ? { scale: 0.98 } : undefined}
-      >
-        {isLoading && <Spinner />}
-        {isLoading ? "Enviando..." : "Enviar mensagem"}
-      </motion.button>
+      <div className="mt-1 flex flex-wrap items-center gap-4">
+        <button
+          type="submit"
+          disabled={isLoading || !hydrated}
+          className="btn-pill px-[26px]"
+        >
+          {isLoading && <Spinner />}
+          {isLoading ? "Enviando" : "Enviar mensagem"}
+        </button>
 
-      {/* Status feedback */}
-      <AnimatePresence mode="wait">
-        {status === "success" && (
-          <motion.p
-            key="success"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            className="font-mono text-xs text-accent text-center py-1 flex items-center justify-center gap-1.5"
-          >
-            <Check size={13} strokeWidth={2} className="inline-block" />
-            Mensagem enviada com sucesso!
-          </motion.p>
-        )}
-        {status === "error" && (
-          <motion.p
-            key="error"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            className="font-mono text-xs text-red-400 text-center py-1"
-          >
-            Falha ao enviar. Tente novamente ou envie email direto.
-          </motion.p>
-        )}
-      </AnimatePresence>
+        {/* Feedback de envio — equivalente ao [data-status] do protótipo.
+            CSS puro em vez de framer-motion: mantém a home fora do bundle da lib. */}
+        <div aria-live="polite" className="font-mono text-[11px]">
+          {status === "success" && (
+            <span className="animate-slide-up text-positive">
+              Mensagem enviada.
+            </span>
+          )}
+          {status === "error" && (
+            <span className="animate-slide-up text-negative">
+              Falha ao enviar — envie e-mail direto.
+            </span>
+          )}
+        </div>
+      </div>
     </form>
   );
 }

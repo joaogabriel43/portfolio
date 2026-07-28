@@ -1,150 +1,76 @@
-"use client";
-
-import { motion } from "framer-motion";
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { AnimatedText } from "@/components/ui/AnimatedText";
-import { ContactForm } from "@/components/ui/ContactForm";
 import { personal } from "@/data/personal";
-import { Parallax3DLayer } from "@/components/ui/Parallax3DLayer";
+import { ContactForm } from "@/components/ui/ContactForm";
 
-// ─── Build social links from personal.ts ─────────────────────
-// Strip protocol prefix for display value
-function stripProtocol(url: string): string {
-  return url.replace(/^https?:\/\//, "");
-}
+/** Remove protocolo e barra final para exibir a URL de forma limpa. */
+const prettyUrl = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
-const SOCIAL_LINKS = [
+const CHANNELS = [
+  { label: "GitHub", value: prettyUrl(personal.github), href: personal.github },
+  { label: "LinkedIn", value: prettyUrl(personal.linkedin), href: personal.linkedin },
   {
-    label: "Email",
-    value: personal.email,
-    href: `mailto:${personal.email}`,
+    label: "Telefone",
+    value: personal.phone,
+    href: `tel:${personal.phone.replace(/\D/g, "")}`,
   },
-  {
-    label: "GitHub",
-    value: stripProtocol(personal.github),
-    href: personal.github,
-  },
-  {
-    label: "LinkedIn",
-    value: stripProtocol(personal.linkedin),
-    href: personal.linkedin,
-  },
-] as const;
+  { label: "Local", value: personal.location, href: null },
+];
 
-// ─── Animated social link ─────────────────────────────────────
-function SocialLink({
-  label,
-  value,
-  href,
-}: {
-  label: string;
-  value: string;
-  href: string;
-}) {
-  return (
-    <motion.a
-      href={href}
-      target={href.startsWith("mailto") ? undefined : "_blank"}
-      rel={href.startsWith("mailto") ? undefined : "noopener noreferrer"}
-      className="group flex items-center gap-4"
-      whileHover="hovered"
-      aria-label={`${label}: ${value}`}
-    >
-      <span className="font-mono text-[10px] tracking-widest uppercase text-muted/50 w-16 shrink-0">
-        {label}
-      </span>
-      <div className="flex items-center gap-2 overflow-hidden">
-        <motion.span
-          className="font-sans text-sm text-foreground/70 group-hover:text-accent transition-colors duration-200"
-          variants={{ hovered: { x: 6 } }}
-          transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
-        >
-          {value}
-        </motion.span>
-        <motion.span
-          className="text-accent text-sm"
-          variants={{
-            initial: { opacity: 0, x: -6 },
-            hovered: { opacity: 1, x: 0 },
-          }}
-          initial="initial"
-          transition={{ duration: 0.18 }}
-        >
-          →
-        </motion.span>
-      </div>
-    </motion.a>
-  );
-}
-
-// ─── Contact section ──────────────────────────────────────────
 export function Contact() {
   return (
-    <section id="contact" className="section-padding border-t border-border">
-      <Parallax3DLayer depth={0.8} className="container-main">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-24">
-          {/* ── Left: info ── */}
-          <div>
-            <div className="mb-5">
-              <SectionLabel index={6}>contato</SectionLabel>
-            </div>
+    <section id="contact" className="container-page pb-[110px] pt-32 md:pt-40 lg:pt-[170px]">
+      <div className="mx-auto flex max-w-[980px] flex-col gap-14">
+        <header className="flex flex-col gap-5">
+          <p className="eyebrow">Contato</p>
+          <h2 className="display-lg text-[clamp(2.4rem,7vw,6rem)]">
+            Vamos conversar.
+          </h2>
+          {personal.available && (
+            <p className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              <span
+                className="inline-block h-1.5 w-1.5 rounded-full bg-positive"
+                aria-hidden
+              />
+              Disponível para novas oportunidades
+            </p>
+          )}
+        </header>
 
-            <AnimatedText
-              as="h2"
-              className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4"
-              delay={0.08}
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[clamp(32px,5vw,64px)]">
+          {/* ── Formulário (Resend via /api/contact) ── */}
+          <ContactForm />
+
+          {/* ── Canais diretos ── */}
+          <div className="flex flex-col gap-9">
+            <a
+              href={`mailto:${personal.email}`}
+              className="border-b border-border pb-3.5 text-[clamp(1.1rem,2.4vw,1.6rem)] font-light leading-[1.3] tracking-[-0.02em] text-accent transition-opacity duration-base ease-out hover:opacity-70"
             >
-              Vamos trabalhar
-              <br />
-              <span className="text-accent">juntos.</span>
-            </AnimatedText>
+              {personal.email}
+            </a>
 
-            <AnimatedText delay={0.14}>
-              <p className="font-sans text-muted text-base leading-relaxed mb-8">
-                Aberto a oportunidades de trabalho, projetos freelance ou
-                simplesmente uma boa conversa sobre tecnologia. Me manda uma
-                mensagem.
-              </p>
-            </AnimatedText>
-
-            {/* Availability badge */}
-            <AnimatedText delay={0.18}>
-              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-sm border border-white/8 bg-white/[0.03] mb-10">
-                <span className="relative flex w-2 h-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
-                  <span className="relative inline-flex rounded-full w-2 h-2 bg-green-400" />
-                </span>
-                <span className="font-mono text-[11px] text-muted tracking-wide">
-                  Disponível para novas oportunidades
-                </span>
-              </div>
-            </AnimatedText>
-
-            {/* Social links from personal.ts */}
-            <AnimatedText delay={0.22}>
-              <div className="space-y-4">
-                {SOCIAL_LINKS.map((link) => (
-                  <SocialLink key={link.label} {...link} />
-                ))}
-              </div>
-            </AnimatedText>
+            <dl className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-x-6 gap-y-7">
+              {CHANNELS.map(({ label, value, href }) => (
+                <div key={label}>
+                  <dt className="eyebrow-sm">{label}</dt>
+                  <dd className="mt-2.5 text-[14.5px] leading-[1.45] [overflow-wrap:anywhere]">
+                    {href ? (
+                      <a
+                        href={href}
+                        target={href.startsWith("http") ? "_blank" : undefined}
+                        rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                        className="transition-colors duration-base ease-out hover:text-accent"
+                      >
+                        {value}
+                      </a>
+                    ) : (
+                      value
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
-
-          {/* ── Right: form ── */}
-          <AnimatedText delay={0.1}>
-            <ContactForm />
-          </AnimatedText>
         </div>
-      </Parallax3DLayer>
-
-      {/* Footer */}
-      <div className="container-main mt-20 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="font-mono text-xs text-muted">
-          © {new Date().getFullYear()} — Todos os direitos reservados.
-        </p>
-        <p className="font-mono text-xs text-muted/40">
-          Next.js 14 · Tailwind · Framer Motion
-        </p>
       </div>
     </section>
   );

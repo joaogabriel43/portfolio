@@ -1,0 +1,62 @@
+/* RoutineFlow — Color tokens
+ * Direction: "Graphite" — neutral cool near-blacks in real elevation layers,
+ * warm off-white text (less clinical), single vivid-blue accent.
+ */
+:root {
+  /* ── Base surfaces (elevation layers) ───────────────────────────── */
+  --bg:          #08080A;   /* app background — deepest */
+  --surface-1:   #0F0F11;   /* sidebar, sunken wells, inputs */
+  --surface-2:   #141416;   /* cards — the default raised surface */
+  --surface-3:   #1C1C1F;   /* hover / popovers / nested raised */
+  --surface-4:   #232327;   /* active pressed / tooltips */
+
+  /* ── Borders (hairlines) ────────────────────────────────────────── */
+  --border-subtle: #1B1B1E; /* faint dividers inside cards */
+  --border:        #26262A; /* default hairline border */
+  --border-strong: #34343A; /* focus rings on neutrals, emphasis */
+
+  /* ── Text (warm off-white ramp) ─────────────────────────────────── */
+  --text-hi:       #F4F2EF; /* titles, primary content */
+  --text-mid:      #B8B6B3; /* strong secondary */
+  --text-lo:       #8C8A88; /* secondary / metadata */
+  --text-dim:      #5C5B59; /* tertiary / captions */
+  --text-disabled: #3A3A3C; /* disabled */
+
+  /* ── Accent — Vivid Blue ────────────────────────────────────────── */
+  --accent:          #2F8BFF;
+  --accent-hover:    #4F9DFF;
+  --accent-press:    #1E7AF0;
+  --accent-fg:       #FFFFFF;
+  --accent-bg:       rgba(47,139,255,0.10);  /* tinted fill */
+  --accent-border:   rgba(47,139,255,0.24);  /* tinted border */
+  --accent-ring:     rgba(47,139,255,0.45);  /* focus ring */
+
+  /* ── Semantic status ────────────────────────────────────────────── */
+  --success:        #34D399;
+  --success-bg:     rgba(52,211,153,0.10);
+  --warning:        #FFB340;
+  --warning-bg:     rgba(255,179,64,0.10);
+  --danger:         #FF453A;
+  --danger-hover:   #FF6961;
+  --danger-bg:      rgba(255,69,58,0.10);
+
+  /* ── Area / category palette (per-area accents on dark) ─────────── */
+  --area-blue:   #2F8BFF;
+  --area-indigo: #7C7CF6;
+  --area-violet: #C07CF6;
+  --area-pink:   #F472B6;
+  --area-red:    #FF6B6B;
+  --area-amber:  #FFB340;
+  --area-green:  #34D399;
+  --area-teal:   #2DD4BF;
+  --area-cyan:   #38BDF8;
+
+  /* ── Semantic aliases (use these in components) ─────────────────── */
+  --surface-card:    var(--surface-2);
+  --surface-sunken:  var(--surface-1);
+  --surface-raised:  var(--surface-3);
+  --text-body:       var(--text-hi);
+  --text-muted:      var(--text-lo);
+  --color-link:      var(--accent);
+  --color-focus:     var(--accent-ring);
+}

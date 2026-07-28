@@ -57,6 +57,17 @@ export const skillGroups: SkillGroup[] = [
     ],
   },
   {
+    group: "Mensageria",
+    icon: "Radio",
+    skills: [
+      "RabbitMQ",
+      "Outbox Pattern",
+      "Redis Pub/Sub",
+      "Server-Sent Events",
+      "Resilience4j",
+    ],
+  },
+  {
     group: "DevOps",
     icon: "GitBranch",
     skills: [

@@ -1,30 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, DM_Sans, DM_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { Analytics } from "@vercel/analytics/react";
-import { Providers } from "@/components/providers/Providers";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
-
-// ─── Fonts ────────────────────────────────────────────────────
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  display: "swap",
-  weight: ["300", "400", "500", "600"],
-});
-
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  variable: "--font-dm-mono",
-  display: "swap",
-  weight: ["300", "400", "500"],
-});
 
 // ─── Site constants ───────────────────────────────────────────
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://joaogabriel.vercel.app";
@@ -131,7 +110,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#08080a" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -145,26 +127,27 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${playfair.variable} ${dmSans.variable} ${dmMono.variable}`}
+      suppressHydrationWarning
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <head>
+        {/* Aplica o tema salvo antes da primeira pintura — evita flash */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="grain bg-background text-foreground antialiased">
+      <body className="bg-background text-foreground font-sans antialiased">
         {/* Skip to main content — accessible, visually hidden until focused */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-accent focus:text-background focus:font-sans focus:text-sm focus:font-medium focus:rounded-sm"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-accent focus:text-accent-fg focus:text-sm focus:font-medium focus:rounded-lg"
         >
           Ir para o conteúdo principal
         </a>
 
-        <Providers>
-          {children}
-        </Providers>
+        {children}
         <Analytics />
       </body>
     </html>

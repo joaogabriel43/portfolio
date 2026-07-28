@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { projects } from "@/data/projects";
 import { CaseStudyContent } from "@/components/pages/CaseStudyContent";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
 interface Props {
   params: { slug: string };
@@ -37,8 +39,12 @@ export default function ProjectPage({ params }: Props) {
   if (!project || !project.caseStudy) notFound();
 
   return (
-    <CaseStudyContent
-      project={project as typeof project & { caseStudy: NonNullable<typeof project.caseStudy> }}
-    />
+    <>
+      <Navbar />
+      <CaseStudyContent
+        project={project as typeof project & { caseStudy: NonNullable<typeof project.caseStudy> }}
+      />
+      <Footer />
+    </>
   );
 }
