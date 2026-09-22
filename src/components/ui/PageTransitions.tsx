@@ -51,8 +51,10 @@ export function PageTransitions() {
         return;
       }
 
+      // preventDefault já basta: o <Link> do Next verifica e.defaultPrevented
+      // antes de navegar, então não precisamos de stopPropagation — isso deixa
+      // onClick handlers React futuros no link (bubble phase) livres para rodar.
       e.preventDefault();
-      e.stopPropagation();
       const transition = document.startViewTransition(
         () =>
           new Promise<void>((resolve) => {
