@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Project, CaseStudy } from "@/data/projects";
+import { ReadableText } from "@/components/ui/ReadableText";
 
 // ─── Types ────────────────────────────────────────────────────
 interface Props {
@@ -248,12 +249,9 @@ export function CaseStudyContent({ project }: Props) {
                 : "max-w-[720px]"
             }
           >
-            <p
-              data-reveal
-              className="text-[17px] leading-[1.7] text-muted [text-wrap:pretty]"
-            >
-              {cs.problem}
-            </p>
+            <div data-reveal>
+              <ReadableText text={cs.problem} collapsedLines={5} />
+            </div>
 
             {diagram && (
               <div data-reveal>
@@ -270,8 +268,16 @@ export function CaseStudyContent({ project }: Props) {
         <div className="mx-auto flex max-w-[1000px] flex-col gap-12">
           <SectionHead
             eyebrow="Arquitetura"
-            title={cs.architecture.overview}
+            title="Como o sistema é organizado."
           />
+
+          <div data-reveal className="max-w-[720px]">
+            <ReadableText
+              text={cs.architecture.overview}
+              collapsedLines={4}
+              fadeFrom="surface"
+            />
+          </div>
 
           <div>
             <p className="eyebrow-sm">
@@ -337,9 +343,13 @@ export function CaseStudyContent({ project }: Props) {
                       />
                       Problema
                     </p>
-                    <p className="mt-3 text-[14.5px] leading-[1.6] text-muted [text-wrap:pretty]">
-                      {ch.description}
-                    </p>
+                    <div className="mt-3">
+                      <ReadableText
+                        text={ch.description}
+                        collapsedLines={3}
+                        className="text-[14.5px] leading-[1.6] text-muted [text-wrap:pretty]"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -350,9 +360,13 @@ export function CaseStudyContent({ project }: Props) {
                       />
                       Solução
                     </p>
-                    <p className="mt-3 text-[14.5px] leading-[1.6] text-muted [text-wrap:pretty]">
-                      {ch.solution}
-                    </p>
+                    <div className="mt-3">
+                      <ReadableText
+                        text={ch.solution}
+                        collapsedLines={3}
+                        className="text-[14.5px] leading-[1.6] text-muted [text-wrap:pretty]"
+                      />
+                    </div>
                   </div>
                 </div>
               </article>
