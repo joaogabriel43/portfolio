@@ -60,14 +60,20 @@ export function FeaturedProject() {
           <Link href={`/projects/${project.id}`} className="btn-pill">
             Ler o case study
           </Link>
-          <a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-pill-ghost"
-          >
-            Código no GitHub ↗
-          </a>
+          {project.githubUrl ? (
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-pill-ghost"
+            >
+              Código no GitHub ↗
+            </a>
+          ) : (
+            <span className="inline-flex h-[46px] items-center rounded-full border border-border px-6 font-mono text-[11px] uppercase tracking-[0.1em] text-dim">
+              Produto comercial — código privado
+            </span>
+          )}
         </div>
       </div>
     </section>

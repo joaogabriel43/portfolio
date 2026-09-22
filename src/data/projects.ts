@@ -47,7 +47,8 @@ export interface Project {
   description: string;
   longDescription: string;
   stack: string[];
-  githubUrl: string;
+  /** Ausente = produto comercial com repositório privado (ex: LGPDFlow). */
+  githubUrl?: string;
   liveUrl?: string;
   featured: boolean;
   year: number;
@@ -1642,6 +1643,653 @@ export const projects: Project[] = [
           title: "Métricas por tool em tempo real",
           description:
             "Chamar as tools algumas vezes e abrir GET /actuator/metrics/mcp.tool.calls.total?tag=tool.name:audit_search — counter incrementando por tool. Um servidor MCP production-ready não é só protocolo, é observabilidade.",
+        },
+      ],
+    },
+  },
+  {
+    id: "budgetlens",
+    title: "BudgetLens",
+    description:
+      "Analisador inteligente de extratos bancários — categorização automática via LLM com sistema de aprendizado por correção do usuário.",
+    longDescription:
+      "Extratos bancários são difíceis de analisar porque cada banco exporta em formato diferente e nenhum app bancário oferece insights contextuais sobre padrões de gasto. O BudgetLens recebe o CSV, categoriza automaticamente via LLM e gera insights em português. O diferencial: quando o usuário corrige uma categoria errada, o sistema aplica essa correção automaticamente em transações futuras similares.",
+    stack: [
+      "Java 21",
+      "Spring Boot",
+      "Spring Batch",
+      "OpenAI API (gpt-4o-mini)",
+      "PostgreSQL",
+      "Spring Security",
+      "JWT",
+      "Docker",
+    ],
+    githubUrl: "https://github.com/joaogabriel43/budgetlens",
+    featured: false,
+    year: 2025,
+    tags: ["AI / LLM", "Backend"],
+    lineup: {
+      order: 12,
+      label: "IA / Backend",
+      keyword: "200→1",
+      keywordSize: 28,
+      stackLine: "Java 21 · Spring Batch · OpenAI · PostgreSQL",
+    },
+    caseStudy: {
+      problem:
+        "Extratos bancários são difíceis de analisar porque cada banco exporta em formato diferente e nenhum app bancário oferece insights contextuais sobre padrões de gasto. O BudgetLens categoriza automaticamente cada transação via LLM e gera insights que aplicativos tradicionais não dão — como identificar em quais semanas o gasto é maior. O sistema aprende: quando o usuário corrige uma categoria errada, essa correção se propaga automaticamente para transações futuras similares.",
+      architecture: {
+        overview:
+          "Clean Architecture em 4 camadas isoladas. Entidades JPA separadas do domínio — Transaction (domínio) nunca se confunde com TransactionEntity (JPA), mantendo o domínio testável e livre de anotações de infraestrutura. Spring Batch conduz o pipeline de categorização em vez de um loop simples, pela rastreabilidade, retry por item e paginação nativa. gpt-4o-mini escolhido conscientemente pelo custo — categorização é tarefa simples, ~$0,0002 por extrato de 200 transações.",
+        boundedContexts: [
+          "Parsing (Strategy por banco)",
+          "Categorization (Batch + Chain of Responsibility + cache)",
+          "Learning (correções do usuário)",
+          "Insights (geração via LLM)",
+          "Statement/Dashboard",
+          "Auth (JWT + ownership)",
+        ],
+        keyDecisions: [
+          {
+            title: "Entidades JPA separadas do domínio",
+            description:
+              "Transaction (domínio) nunca se confunde com TransactionEntity (JPA). O domínio permanece testável e livre de anotações de infraestrutura — um mapper explícito faz a tradução entre as duas representações.",
+          },
+          {
+            title: "Spring Batch em vez de loop simples",
+            description:
+              "O pipeline de categorização usa Spring Batch pela rastreabilidade nativa, retry por item sem abortar o job inteiro, e paginação que nunca carrega o extrato completo em memória.",
+          },
+          {
+            title: "gpt-4o-mini como escolha consciente de custo",
+            description:
+              "Categorização é uma tarefa simples — não justifica um modelo caro. Um extrato de 200 transações custa aproximadamente $0,0002. DTOs na fronteira e injeção via construtor são padrões inegociáveis em todo o projeto.",
+          },
+        ],
+      },
+      challenges: [
+        {
+          title: "Parsing de múltiplos formatos de banco",
+          description:
+            "Cada banco exporta CSV com separador, charset e layout diferentes. Um if/else gigante seria impossível de manter conforme novos bancos fossem adicionados.",
+          solution:
+            "Padrão Strategy — interface StatementParser com supports() e parse(), implementações concretas por banco, e um ParserFactory que itera pelos parsers registrados como @Component e delega ao primeiro que suporta o arquivo. Adicionar um banco novo é criar uma classe nova, zero alteração no código existente.",
+        },
+        {
+          title: "Custo e latência de chamar a LLM por transação",
+          description:
+            "Um extrato com 200 transações \"IFOOD*PEDIDO001\" a \"IFOOD*PEDIDO200\" geraria 200 chamadas idênticas à API — desperdício direto de dinheiro e tempo.",
+          solution:
+            "Normalização de descrição (remove sufixos após asterisco, lowercase, trim) transforma todas em \"ifood\" e um cache em memória garante uma única chamada. Combinado com a Chain of Responsibility, a maioria das transações nem chega na LLM.",
+        },
+        {
+          title: "Sistema de aprendizado por correção sem chamar IA de novo",
+          description:
+            "A correção do usuário precisa valer para o futuro sem virar uma nova chamada de IA nem exigir configuração manual.",
+          solution:
+            "Ao corrigir, o sistema extrai o padrão normalizado da descrição e salva. Uma Chain of Responsibility consulta na ordem: correção do usuário → padrão aprendido → cache → LLM → fallback \"Outros\". O source de cada categorização registra qual handler resolveu, com rastreabilidade total. Padrões mais específicos vencem (ordenados por LENGTH(pattern) DESC).",
+        },
+      ],
+      metrics: [
+        { label: "Redução de chamadas LLM (cache)", value: "200→1" },
+        { label: "Camadas Clean Architecture", value: "4" },
+        { label: "Custo por extrato de 200 transações", value: "~$0,0002" },
+        { label: "Jobs de CI", value: "3" },
+      ],
+      techStack: [
+        {
+          category: "Backend",
+          items: [
+            "Java 21",
+            "Spring Boot",
+            "Spring Batch",
+            "Spring Security + JWT",
+          ],
+        },
+        {
+          category: "AI Integration",
+          items: [
+            "OpenAI API (gpt-4o-mini)",
+            "Chain of Responsibility",
+            "Cache de normalização",
+          ],
+        },
+        {
+          category: "Persistência",
+          items: ["PostgreSQL", "JpaPagingItemReader (paginação de 50)"],
+        },
+        {
+          category: "CI/CD",
+          items: ["GitHub Actions (3 jobs)", "Docker", "PostgreSQL real em CI"],
+        },
+      ],
+      demoMoments: [
+        {
+          title: "Upload para dashboard ao vivo",
+          description:
+            "Subir um CSV real, ver o polling de status (PENDING → PROCESSING → CATEGORIZED → INSIGHTS_READY) e o dashboard preenchendo com o gráfico de categorias.",
+        },
+        {
+          title: "Correção que ensina o sistema",
+          description:
+            "Corrigir uma categoria errada na tabela inline e ver transações similares do mesmo estabelecimento sendo recategorizadas automaticamente.",
+        },
+        {
+          title: "Cache economizando dinheiro",
+          description:
+            "Nos logs, 200 transações do iFood resultam em 1 chamada à OpenAI em vez de 200 — o argumento de custo que qualquer tech lead entende de cara.",
+        },
+      ],
+    },
+  },
+  {
+    id: "observastack",
+    title: "ObservaStack",
+    description:
+      "Observabilidade completa para Spring Boot com uma dependência Maven — distributed tracing, métricas JVM e dashboard, sem Prometheus, Grafana ou vendor lock-in.",
+    longDescription:
+      "Prometheus + Grafana + Jaeger exigem horas de configuração e acoplamento a vendors. ObservaStack resolve com uma única dependência Maven — distributed tracing, métricas JVM e dashboard prontos, tudo armazenado no PostgreSQL do próprio time.",
+    stack: [
+      "Java 21",
+      "Spring Boot",
+      "Resilience4j",
+      "PostgreSQL",
+      "Angular 17",
+      "d3-flame-graph",
+      "JFR",
+      "Docker",
+    ],
+    githubUrl: "https://github.com/joaogabriel43/observastack",
+    featured: false,
+    year: 2025,
+    tags: ["Infra / DevOps", "Developer Tooling"],
+    lineup: {
+      order: 13,
+      label: "Plataforma",
+      keyword: "N+1→1",
+      keywordSize: 26,
+      stackLine: "Java 21 · Resilience4j · Angular 17 · JFR",
+    },
+    caseStudy: {
+      problem:
+        "Observabilidade é obrigatória em produção, mas Prometheus + Grafana + Jaeger exigem horas de configuração, manutenção contínua e acoplamento a vendors específicos. Equipes pequenas acabam sem visibilidade nenhuma ou pagando por SaaS caro. ObservaStack resolve com uma única dependência Maven — distributed tracing, métricas JVM e dashboard prontos, tudo armazenado no PostgreSQL do próprio time.",
+      architecture: {
+        overview:
+          "Mono-repo Maven com 4 módulos. sdk-core é Java puro (zero Spring), implementa W3C TraceContext via ThreadLocal, Sampler head-based determinístico por traceId e buffer circular com Resilience4j para envio resiliente. sdk-spring-boot-starter faz autoconfigure registrando Filter e Interceptor sem configuração manual. server segue Clean Architecture com CQRS separando ingestão de consulta, persistência via NamedParameterJdbcTemplate com batch insert idempotente. dashboard é Angular 17 com flame graph via d3-flame-graph.",
+        boundedContexts: [
+          "sdk-core (propagação W3C, sampling, buffer)",
+          "sdk-spring-boot-starter (autoconfigure)",
+          "server/domain (Trace, Span, Metric puros)",
+          "server/application (CQRS: ReceiveTrace / QueryTrace)",
+          "server/infrastructure (JDBC, Flyway)",
+          "dashboard (flame graph, painel JVM)",
+        ],
+        keyDecisions: [
+          {
+            title: "HTTP push assíncrono em vez de gRPC",
+            description:
+              "YAGNI aplicado conscientemente — gRPC adicionaria complexidade de infraestrutura sem necessidade real para o volume de spans do público-alvo (times pequenos).",
+          },
+          {
+            title: "PostgreSQL em vez de Jaeger/Prometheus",
+            description:
+              "Sem vendor lock-in e sem infraestrutura extra para o time manter. Tabelas normalizadas (traces + spans com attributes em JSONB + metrics) rodam no banco que o time já opera.",
+          },
+          {
+            title: "Sampling no SDK, não no servidor",
+            description:
+              "O produtor do trace controla o volume de dados enviados, não o consumidor. Sampler head-based determinístico por traceId garante consistência de decisão entre spans do mesmo trace.",
+          },
+        ],
+      },
+      challenges: [
+        {
+          title: "ThreadLocal vazando entre requisições",
+          description:
+            "TraceContext.fromTraceparent() chamava CONTEXT.set(ctx) como side-effect interno. Em pool de threads de Servlet container, uma requisição poderia herdar o contexto de outra silenciosamente.",
+          solution:
+            "O método virou pure parsing — apenas o caller seta o ThreadLocal, e o Filter garante remove() em bloco finally sem exceção. Validado com @RepeatedTest 50x paralelo, zero vazamento.",
+        },
+        {
+          title: "Hibernate gerando SELECT por span antes de INSERT",
+          description:
+            "Com IDs gerados externamente pelo SDK, o Hibernate chamava merge() em vez de persist(), executando um SELECT por span para decidir entre insert/update — 50 spans por trace geravam 50 queries extras.",
+          solution:
+            "Substituição de saveAll() por NamedParameterJdbcTemplate.batchUpdate() com SQL nativo INSERT ... ON CONFLICT DO NOTHING — zero SELECTs parasitas, idempotência nativa do PostgreSQL. Confirmado via datasource-proxy: N spans = exatamente 1 query.",
+        },
+        {
+          title: "JFR Event Streaming precisando de warmup",
+          description:
+            "A RecordingStream da JFR API não emite eventos imediatamente ao iniciar — eventos como jdk.CPULoad levam milissegundos para aparecer, causando testes não-determinísticos.",
+          solution:
+            "Awaitility com tolerância de tempo nos testes de integração, e thread daemon com setStartTime(Instant.EPOCH) para capturar eventos históricos do processo desde o início.",
+        },
+      ],
+      metrics: [
+        { label: "Testes no build final", value: "73" },
+        { label: "Eventos concorrentes testados (jqwik)", value: "2.000" },
+        { label: "Round-trip W3C traceparent testado", value: "1.000x" },
+        { label: "CVEs críticos/altos (OWASP)", value: "0" },
+      ],
+      techStack: [
+        {
+          category: "SDK Core",
+          items: [
+            "Java 21 puro",
+            "W3C TraceContext",
+            "Resilience4j",
+            "Buffer circular",
+          ],
+        },
+        {
+          category: "Server",
+          items: [
+            "Spring Boot",
+            "CQRS",
+            "NamedParameterJdbcTemplate",
+            "Flyway",
+          ],
+        },
+        {
+          category: "Dashboard",
+          items: ["Angular 17", "Angular Material", "d3-flame-graph", "RxJS polling"],
+        },
+        {
+          category: "Testes",
+          items: ["jqwik", "datasource-proxy", "Awaitility", "OWASP Dependency Check"],
+        },
+      ],
+      demoMoments: [
+        {
+          title: "SDK em ação",
+          description:
+            "Adicionar 3 linhas no pom.xml + 2 propriedades no application.yml de uma app demo, fazer uma requisição HTTP, ver o trace aparecer no dashboard com traceId, duration e flame graph renderizado.",
+        },
+        {
+          title: "Resiliência do buffer",
+          description:
+            "Derrubar o servidor ObservaStack, fazer 10 requisições na app demo, subir o servidor novamente e ver os spans acumulados no buffer sendo drenados automaticamente.",
+        },
+        {
+          title: "Métricas JVM ao vivo",
+          description:
+            "Forçar GC via System.gc() na app demo e ver o card de GC Count atualizar no próximo polling de 30s no dashboard — JFR capturando eventos reais sem agente externo.",
+        },
+      ],
+    },
+  },
+  {
+    id: "schemasync",
+    title: "SchemaSync",
+    description:
+      "Validador de migrations que bloqueia PRs com risco de downtime — detecta DROP COLUMN, ALTER TYPE e índices sem CONCURRENTLY antes do deploy, via GitHub Action própria.",
+    longDescription:
+      "Flyway e Liquibase executam migrations mas não dizem se vão quebrar a aplicação em produção. SchemaSync analisa as migrations antes do deploy e bloqueia o PR automaticamente se detectar risco, trazendo para o banco de dados a mesma cultura de prevenção que o linting trouxe para o código.",
+    stack: [
+      "Java 21",
+      "Spring Boot",
+      "JSQLParser",
+      "PostgreSQL",
+      "JWT",
+      "GitHub Actions",
+      "Docker",
+    ],
+    githubUrl: "https://github.com/joaogabriel43/SchemaSync",
+    featured: false,
+    year: 2025,
+    tags: ["Developer Tooling", "Infra / DevOps"],
+    lineup: {
+      order: 14,
+      label: "Devtooling",
+      keyword: "Lock ms",
+      keywordSize: 28,
+      stackLine: "Java 21 · JSQLParser · GitHub Actions · JWT",
+    },
+    caseStudy: {
+      problem:
+        "Flyway e Liquibase executam migrations mas não dizem se elas vão quebrar a aplicação em produção. Um DROP COLUMN, um ALTER TYPE ou um CREATE INDEX sem CONCURRENTLY em tabela grande podem causar downtime, lock de produção ou quebrar microsserviços dependentes — e o time só descobre depois do deploy. SchemaSync analisa as migrations antes do deploy e bloqueia o PR automaticamente se detectar risco.",
+      architecture: {
+        overview:
+          "Clean Architecture em 4 camadas. Domain com entidades Migration, MigrationAnalysis, RiskViolation e enum Severity, zero dependência de framework — validado na revisão final. Application orquestra o RiskAnalysisEngine via Chain of Responsibility entre 5 detectores, e um LockTimeEstimator calcula estimativa de lock por tipo de operação e volume. Infrastructure encapsula JSQLParser — o domain nunca conhece essa dependência. GitHub Action separada (repositório próprio) consome a API via HTTP.",
+        boundedContexts: [
+          "Risk Engine (5 detectores + Chain of Responsibility)",
+          "Auth (JWT + Spring Security)",
+          "Projects (CRUD com isolamento de tenant)",
+          "Analysis (upload + análise + histórico)",
+          "GitHub Action (repositório separado, composite action)",
+        ],
+        keyDecisions: [
+          {
+            title: "JSQLParser confinado à infrastructure",
+            description:
+              "O domain nunca conhece o parser SQL concreto — SqlMigrationParser encapsula JSQLParser inteiramente na camada de infraestrutura, permitindo trocar a biblioteca de parsing sem tocar em regras de negócio.",
+          },
+          {
+            title: "5 detectores via Chain of Responsibility",
+            description:
+              "DestructiveOperationDetector, AlterTypeDetector, NotNullConstraintDetector, IndexWithoutConcurrentDetector e RenamingDetector — cada um isolado, testável independentemente e componível.",
+          },
+          {
+            title: "JWT secret obrigatório via variável de ambiente",
+            description:
+              "A aplicação falha ao iniciar se o secret não estiver definido — fail-fast contra deploy inseguro por omissão, em vez de rodar com um valor default inseguro.",
+          },
+        ],
+      },
+      challenges: [
+        {
+          title: "Parser SQL que não pode quebrar com DDL não suportado",
+          description:
+            "JSQLParser não cobre 100% dos casos do PostgreSQL — ALTER TYPE ... ADD VALUE e ALTER COLUMN ... TYPE ... USING falham silenciosamente se não tratados.",
+          solution:
+            "Interface MigrationParser no domain com JSQLParser como caminho feliz e regex como fallback documentado. Casos não cobertos geram RiskViolation de severidade INFO com mensagem explícita de limitação — transparência em vez de falso negativo silencioso.",
+        },
+        {
+          title: "Estimativa de lock time sem conexão ao banco",
+          description:
+            "Calcular lock time real exige pg_stat_user_tables — conexão que nem sempre existe no momento da análise de um PR em CI.",
+          solution:
+            "Mapa heurístico estático por tipo de operação com thresholds de linhas (rowCount como parâmetro opcional). Sem rowCount, estimativa conservadora é aplicada e avisada. A interface do LockTimeEstimator já está preparada para receber implementação com conexão real numa v2, sem mudar o contrato.",
+        },
+        {
+          title: "GitHub Action idempotente com comentário consolidado",
+          description:
+            "Actions que rodam múltiplas vezes no mesmo PR duplicavam comentários e poluíam a thread de review.",
+          solution:
+            "O script analyze.sh busca comentários anteriores da action via GitHub API antes de postar — se encontrar, atualiza em vez de criar. O comentário é um Markdown consolidado com tabela de violações ordenadas por severidade.",
+        },
+      ],
+      metrics: [
+        { label: "Testes unitários", value: "51" },
+        { label: "Property tests (jqwik)", value: "1.000 tentativas/propriedade" },
+        { label: "Problemas corrigidos na revisão final", value: "18" },
+        { label: "N+1 após @EntityGraph", value: "0" },
+      ],
+      techStack: [
+        {
+          category: "Risk Engine",
+          items: [
+            "JSQLParser",
+            "Chain of Responsibility",
+            "5 detectores",
+            "LockTimeEstimator",
+          ],
+        },
+        {
+          category: "Backend",
+          items: [
+            "Java 21",
+            "Spring Boot",
+            "Spring Security + JWT",
+            "@EntityGraph",
+          ],
+        },
+        {
+          category: "GitHub Action",
+          items: [
+            "Shell",
+            "GitHub API",
+            "Composite Action",
+            "schemasync-action (repo próprio)",
+          ],
+        },
+        {
+          category: "Testes / CI",
+          items: ["jqwik", "Testcontainers", "OWASP", "Trivy", "GitLeaks", "SpotBugs"],
+        },
+      ],
+      demoMoments: [
+        {
+          title: "PR bloqueado em tempo real",
+          description:
+            "Abrir um PR com uma migration contendo DROP COLUMN — a GitHub Action detecta, chama a API e posta automaticamente um comentário com tabela de violações, marcando o check como falho sem intervenção humana.",
+        },
+        {
+          title: "Estimativa de lock time",
+          description:
+            "Enviar via Swagger uma migration com CREATE INDEX sem CONCURRENTLY e rowCount: 2000000 — resposta retorna estimatedLockTimeMs: 120000, severity: BREAKING, explicando o motivo.",
+        },
+        {
+          title: "Isolamento de tenant",
+          description:
+            "Criar dois usuários, cada um com seu projeto. Tentar acessar o projeto do usuário A com o token do usuário B retorna 403 — multitenancy funcionando sem RLS, apenas com user_id nas queries.",
+        },
+      ],
+    },
+  },
+  {
+    id: "datasentry",
+    title: "DataSentry",
+    description:
+      "Pipeline de validação de qualidade de dados para PostgreSQL — regras configuráveis via YAML, detecção de anomalias estatísticas e alertas antes que o problema chegue no usuário final.",
+    longDescription:
+      "Dados corrompidos causam bugs silenciosos que só aparecem em produção. Ferramentas existentes protegem o schema mas não monitoram a qualidade dos dados em runtime. DataSentry roda jobs agendados que validam regras de negócio configuráveis em YAML diretamente nas tabelas, detecta anomalias estatísticas e alerta antes do impacto no usuário.",
+    stack: [
+      "Java 21",
+      "Spring Boot",
+      "Spring Batch",
+      "SnakeYAML",
+      "PostgreSQL",
+      "Resilience4j",
+      "Angular 17",
+      "Chart.js",
+    ],
+    githubUrl: "https://github.com/joaogabriel43/data-sentry",
+    featured: false,
+    year: 2025,
+    tags: ["Backend", "Infra / DevOps"],
+    lineup: {
+      order: 15,
+      label: "Backend",
+      keyword: "Z-score",
+      keywordSize: 28,
+      stackLine: "Java 21 · Spring Batch · PostgreSQL · Angular 17",
+    },
+    caseStudy: {
+      problem:
+        "Dados corrompidos ou inconsistentes no PostgreSQL causam bugs silenciosos que só aparecem em produção — relatórios errados, falhas em cascata, comportamentos difíceis de rastrear até a origem. Ferramentas existentes protegem o schema (constraints, migrations) mas não monitoram a qualidade dos dados em runtime. DataSentry roda jobs agendados que validam regras configuráveis em YAML diretamente nas tabelas, detecta anomalias estatísticas e alerta antes que o problema chegue no usuário final.",
+      architecture: {
+        overview:
+          "Clean Architecture em 4 camadas. Domain com records Java puros (ValidationRule, Violation, ValidationResult) e portas (RuleLoader, ValidationExecutor, NotificationPort), zero dependência de framework. Application orquestra loader e executor via ValidationService, com AlertingService avaliando thresholds pós-job. Infrastructure usa JdbcTemplate para execução (tabelas-alvo não têm entidades mapeadas) e JPA apenas para leitura do histórico — CQRS prático. Spring Batch 5 com um Step por regra, gerado dinamicamente.",
+        boundedContexts: [
+          "Rule Engine (loader YAML + executor JDBC)",
+          "Batch Pipeline (Job dinâmico por regra)",
+          "History & Persistence (retenção 90 dias)",
+          "Alerting (Resilience4j + NotifyFlow adapter)",
+          "Dashboard Angular (overview, runs, violations)",
+        ],
+        keyDecisions: [
+          {
+            title: "JdbcTemplate para execução, JPA só para leitura",
+            description:
+              "As tabelas-alvo da validação não têm entidades mapeadas — JdbcTemplate com queries dinâmicas permite validar qualquer tabela sem exigir mapeamento prévio. JPA cuida apenas da leitura do histórico de validações, um CQRS prático sem framework dedicado.",
+          },
+          {
+            title: "Spring Batch com Step dinâmico por regra",
+            description:
+              "Cada regra do YAML vira um Step do Job gerado em runtime, com StepExecutionListener pré-agregando estatísticas necessárias antes do processamento por chunk.",
+          },
+          {
+            title: "Whitelist de identifiers contra SQL Injection",
+            description:
+              "NamedParameterJdbcTemplate parametriza valores mas não identifiers — nomes de tabela e coluna vindos do YAML precisam de validação própria na fronteira de entrada, antes de qualquer objeto de domínio ser construído.",
+          },
+        ],
+      },
+      challenges: [
+        {
+          title: "Z-score sem explodir memória",
+          description:
+            "Calcular anomalia estatística registro a registro em Java exigiria carregar toda a tabela em memória — inviável para tabelas grandes.",
+          solution:
+            "Pré-agregação de AVG() e STDDEV() diretamente no PostgreSQL via StepExecutionListener#beforeStep, injetado no ExecutionContext do Step — só a comparação matemática acontece no ItemProcessor por chunk. Edge case tratado: stddev == 0 (coluna com valor constante) detectado no beforeStep, step bypassado com log informativo, sem divisão por zero.",
+        },
+        {
+          title: "SQL Injection via identifiers vindos do YAML",
+          description:
+            "NamedParameterJdbcTemplate parametriza valores mas não identifiers — nomes de tabela e coluna vindos do YAML iam direto na query sem validação.",
+          solution:
+            "Whitelist de identifiers no YamlRuleLoader com regex ^[a-zA-Z_][a-zA-Z0-9_]*$ aplicada na fronteira de entrada, antes de qualquer objeto de domínio ser construído. Falha lança InvalidRuleDefinitionException indicando exatamente qual campo do YAML é inválido.",
+        },
+        {
+          title: "Falha de alerta não pode derrubar o job inteiro",
+          description:
+            "O adapter de notificação chama uma API externa — qualquer instabilidade propagaria uma exception que abortaria o Spring Batch Job por completo, mesmo com validações já concluídas.",
+          solution:
+            "Resilience4j com retry (3 tentativas, backoff exponencial) e fallback que loga o alerta localmente sem relançar a exception. Testado com WireMock retornando HTTP 500 — o job termina SUCCESS, o fallback é acionado, a violation fica registrada no banco.",
+        },
+      ],
+      metrics: [
+        { label: "Registros testados sem OOM", value: "10k+" },
+        { label: "INSERTs para milhares de violations", value: "<50" },
+        { label: "CVEs críticos (OWASP/Trivy)", value: "0" },
+        { label: "Stack traces expostos em HTTP", value: "0" },
+      ],
+      techStack: [
+        {
+          category: "Backend",
+          items: ["Java 21", "Spring Boot", "Spring Batch 5", "SnakeYAML"],
+        },
+        {
+          category: "Persistência",
+          items: ["PostgreSQL", "JdbcPagingItemReader", "JdbcBatchItemWriter"],
+        },
+        {
+          category: "Resiliência",
+          items: ["Resilience4j", "NotifyFlowAdapter", "WireMock (testes)"],
+        },
+        {
+          category: "Frontend",
+          items: ["Angular 17", "Chart.js", "Dashboard (overview/runs/violations)"],
+        },
+      ],
+      demoMoments: [
+        {
+          title: "Z-score em ação",
+          description:
+            "Inserir manualmente um valor outlier numa tabela (ex: pedido de R$999.999 numa base com média de R$150), disparar o job, ver a violation aparecer no dashboard como STATISTICAL_ANOMALY.",
+        },
+        {
+          title: "Resiliência do alerta",
+          description:
+            "Com o serviço de notificação offline, disparar o job com violations acima do threshold — o job termina SUCCESS no dashboard enquanto o log registra o fallback local.",
+        },
+        {
+          title: "DSL YAML sem código",
+          description:
+            "Abrir o arquivo de regras, adicionar uma nova regra de FORMAT com regex de CPF, reiniciar e disparar o job — nova regra detectada e violations listadas sem uma linha de código alterada.",
+        },
+      ],
+    },
+  },
+  {
+    id: "lgpdflow",
+    title: "LGPDFlow",
+    description:
+      "Compliance LGPD self-service para times técnicos — mapeamento de dados, gestão de consentimento e resposta a titulares, sem consultoria terceirizada.",
+    longDescription:
+      "PMEs e startups brasileiras sabem que precisam de conformidade com a LGPD, mas soluções de mercado são pesadas em consultoria humana e caras — dependem de contratar um DPO terceirizado. O LGPDFlow é self-service: o próprio time técnico configura, com onboarding pensado para quem já lida com API e banco de dados, não onboarding jurídico-burocrático.",
+    stack: [
+      "Java 21",
+      "Spring Boot 3.2",
+      "Virtual Threads",
+      "PostgreSQL",
+      "Row-Level Security",
+      "Flyway",
+      "Next.js 14",
+      "Tailwind",
+    ],
+    featured: false,
+    year: 2025,
+    tags: ["Backend"],
+    lineup: {
+      order: 16,
+      label: "Produto",
+      keyword: "RLS",
+      keywordSize: 30,
+      stackLine: "Java 21 · Virtual Threads · PostgreSQL RLS · Next.js 14",
+    },
+    caseStudy: {
+      problem:
+        "PMEs e startups de tecnologia brasileiras sabem que precisam de conformidade com a LGPD, mas as soluções de mercado são pesadas em consultoria humana e caras — dependem de contratar um DPO terceirizado. Times técnicos pequenos ficam sem processo formal para mapear onde os dados pessoais estão, gerenciar consentimento por finalidade e responder a pedidos de titular dentro dos prazos legais. O LGPDFlow é self-service: o próprio time técnico configura, com onboarding pensado para quem já lida com API e banco de dados.",
+      architecture: {
+        overview:
+          "Clean Architecture em 4 camadas, Java 21 + Spring Boot 3.2 + Virtual Threads, PostgreSQL + Flyway, frontend Next.js 14. Multitenancy via Row-Level Security (FORCE ROW LEVEL SECURITY por tenant_id) como mecanismo primário de isolamento — não uma checagem de aplicação, mas uma barreira no próprio banco. Dual-role no banco: um papel para DDL, outro para runtime — a aplicação nunca roda com privilégio de schema. Audit log append-only e imutável, com UPDATE/DELETE revogados na própria tabela.",
+        boundedContexts: [
+          "Data Mapping (DataAsset + DataFlow)",
+          "Consent Management (ledger append-only)",
+          "Incident Management (máquina de estados + prazo legal)",
+          "Compliance Dashboard (agregação read-only)",
+          "Identity & Access (JWT + isolamento na borda)",
+        ],
+        keyDecisions: [
+          {
+            title: "Row-Level Security como barreira primária, não aplicação",
+            description:
+              "FORCE ROW LEVEL SECURITY por tenant_id é imposta no próprio PostgreSQL, não numa checagem de código que pode ser esquecida em algum endpoint novo. Contexto de tenant propagado via TenantAspect com ordem explícita em relação à transação, fail-closed por design — sem tenant resolvido, a query simplesmente falha.",
+          },
+          {
+            title: "Dois regimes de auditoria formalizados como ADRs",
+            description:
+              'Agregados mutáveis (ex: incidente mudando de fase) precisam de diff no audit log para provar conformidade com prazo legal. Agregados que já são o próprio fato imutável (registro de consentimento) não podem duplicar payload — isso violaria o próprio princípio de minimização de dados que o produto vende. Formalizado como dois ADRs distintos: "Diff Auditing" vs "Thin Auditing".',
+          },
+          {
+            title: "Dual-role de banco — DDL nunca roda com o app",
+            description:
+              "Um role separado para migrations (DDL) e outro para a aplicação em runtime. Mesmo com uma falha de segurança na aplicação, o invasor nunca teria privilégio para alterar schema — só o que o role de runtime permite.",
+          },
+        ],
+      },
+      challenges: [
+        {
+          title: "Autenticação antes de existir um tenant resolvido",
+          description:
+            "RLS bloqueia por padrão qualquer leitura sem tenant_id no contexto — mas o login acontece antes de haver tenant resolvido, criando um paradoxo: como autenticar se a query de autenticação também é bloqueada pela RLS?",
+          solution:
+            "Função PostgreSQL SECURITY DEFINER isolando o lookup de credencial, com hardening explícito: search_path fixado contra sequestro de schema, EXECUTE restrito via GRANT só ao role de runtime, e retorno limitado estritamente a hash/tenant_id/user_id — nunca SELECT *.",
+        },
+        {
+          title: "Diferenciar dois regimes de auditoria no mesmo padrão de evento",
+          description:
+            "Um único padrão de captura de eventos não serve para os dois tipos de agregado: um incidente mudando de fase precisa do diff completo, mas um registro de consentimento — que já é o próprio fato — não pode duplicar o payload sem contradizer o princípio de minimização de dados que o produto vende.",
+          solution:
+            'Dois ADRs distintos formalizando "Diff Auditing" (para agregados mutáveis) e "Thin Auditing" (para agregados que são o próprio fato imutável), reutilizados de forma consistente entre todos os módulos que precisam de trilha de auditoria.',
+        },
+        {
+          title: "Job agendado sem vazar contexto entre tenants",
+          description:
+            "O scanner de prazo de comunicação à ANPD (Art. 48 da LGPD, 2 dias úteis) precisa iterar múltiplos tenants, mas @Scheduled não pode ser @Transactional por conflito de ordem com o aspecto de RLS — e uma transação única varrendo todos os tenants seria um vetor real de vazamento cross-tenant.",
+          solution:
+            "Cada iteração isolada em @Transactional(REQUIRES_NEW) por tenant, com o contexto de tenant setado explicitamente a cada ciclo — garantindo que nenhuma leitura de um tenant vaze para o processamento de outro.",
+        },
+      ],
+      metrics: [
+        { label: "Testes (progressão por sprint)", value: "18→44" },
+        { label: "Sprints entregues", value: "5" },
+        { label: "Isolamento multitenant testado", value: "toda tabela nova" },
+        { label: "Gates de CI/CD", value: "4" },
+      ],
+      techStack: [
+        { category: "Backend", items: ["Java 21", "Spring Boot 3.2", "Virtual Threads", "ArchUnit"] },
+        { category: "Segurança", items: ["Row-Level Security", "Dual-role de banco", "SECURITY DEFINER", "JWT"] },
+        { category: "Persistência", items: ["PostgreSQL", "Flyway", "Audit log append-only"] },
+        { category: "Frontend", items: ["Next.js 14", "Tailwind", "Railway (backend)", "Vercel (frontend)"] },
+      ],
+      demoMoments: [
+        {
+          title: "RLS bloqueando no banco, não na aplicação",
+          description:
+            "Tentar acessar dado de outro tenant via API — o bloqueio acontece diretamente no PostgreSQL, antes mesmo de a lógica de negócio ser executada.",
+        },
+        {
+          title: "Ledger de consentimento à prova de auditoria",
+          description:
+            "Revogar um consentimento e ver o histórico completo (grant → revoke → grant novamente) intacto, com a versão exata do termo aceito em cada evento.",
+        },
+        {
+          title: "Diff de auditoria em incidente",
+          description:
+            "Criar um incidente, avançar sua fase e abrir o audit log mostrando o diff exato de quem mudou o quê e quando — o mesmo mecanismo que sustenta a contagem do prazo legal de comunicação à ANPD.",
         },
       ],
     },

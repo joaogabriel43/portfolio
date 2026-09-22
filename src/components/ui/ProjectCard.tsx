@@ -54,14 +54,20 @@ export function ProjectCard({ project }: ProjectCardProps) {
             Case study →
           </Link>
         )}
-        <a
-          href={project.githubUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-muted transition-colors duration-base ease-out hover:text-accent-text"
-        >
-          GitHub ↗
-        </a>
+        {project.githubUrl ? (
+          <a
+            href={project.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted transition-colors duration-base ease-out hover:text-accent-text"
+          >
+            GitHub ↗
+          </a>
+        ) : (
+          <span className="rounded-full border border-border px-2.5 py-1 normal-case tracking-normal text-dim">
+            Produto comercial — código privado
+          </span>
+        )}
         {project.liveUrl && (
           <a
             href={project.liveUrl}

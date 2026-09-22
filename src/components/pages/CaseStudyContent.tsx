@@ -191,14 +191,20 @@ export function CaseStudyContent({ project }: Props) {
           </p>
 
           <div className="flex flex-wrap gap-3">
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-pill"
-            >
-              Ver código ↗
-            </a>
+            {project.githubUrl ? (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-pill"
+              >
+                Ver código ↗
+              </a>
+            ) : (
+              <span className="inline-flex h-[46px] items-center rounded-full border border-border px-6 font-mono text-[11px] uppercase tracking-[0.1em] text-dim">
+                Produto comercial — código privado
+              </span>
+            )}
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
@@ -417,14 +423,20 @@ export function CaseStudyContent({ project }: Props) {
                 Ver demo ao vivo ↗
               </a>
             )}
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-pill-ghost"
-            >
-              Ver código no GitHub ↗
-            </a>
+            {project.githubUrl ? (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-pill-ghost"
+              >
+                Ver código no GitHub ↗
+              </a>
+            ) : (
+              <span className="inline-flex h-[46px] items-center rounded-full border border-border px-6 font-mono text-[11px] uppercase tracking-[0.1em] text-dim">
+                Produto comercial — código privado
+              </span>
+            )}
             <Link
               href="/projects"
               className="group ml-auto inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent-text"

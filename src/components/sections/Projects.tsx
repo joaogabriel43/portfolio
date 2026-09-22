@@ -8,7 +8,6 @@ const lineup = getLineup();
 function LineupCard({ project }: { project: Project }) {
   const { label, keyword, keywordSize, stackLine } = project.lineup;
   const hasCaseStudy = Boolean(project.caseStudy);
-  const href = hasCaseStudy ? `/projects/${project.id}` : project.githubUrl;
 
   return (
     <article className="card-lift group flex w-[min(290px,82vw)] shrink-0 snap-center flex-col rounded-[20px] bg-surface px-[26px] py-[30px] hover:bg-surface-2">
@@ -25,14 +24,14 @@ function LineupCard({ project }: { project: Project }) {
       <h3 className="text-[21px] font-medium tracking-[-0.02em]">
         {hasCaseStudy ? (
           <Link
-            href={href}
+            href={`/projects/${project.id}`}
             className="after:absolute after:inset-0 after:rounded-[20px] after:content-['']"
           >
             {project.title}
           </Link>
         ) : (
           <a
-            href={href}
+            href={project.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="after:absolute after:inset-0 after:rounded-[20px] after:content-['']"
@@ -50,7 +49,7 @@ function LineupCard({ project }: { project: Project }) {
         {stackLine}
       </p>
 
-      {hasCaseStudy && (
+      {hasCaseStudy && (project.githubUrl ? (
         <a
           href={project.githubUrl}
           target="_blank"
@@ -59,7 +58,11 @@ function LineupCard({ project }: { project: Project }) {
         >
           GitHub ↗
         </a>
-      )}
+      ) : (
+        <p className="relative z-10 mt-3 font-mono text-[10.5px] text-dim">
+          Produto comercial — código privado
+        </p>
+      ))}
     </article>
   );
 }
