@@ -53,7 +53,7 @@ export function PageTransitions() {
 
       e.preventDefault();
       e.stopPropagation();
-      document.startViewTransition(
+      const transition = document.startViewTransition(
         () =>
           new Promise<void>((resolve) => {
             settle.current = resolve;
@@ -62,6 +62,8 @@ export function PageTransitions() {
             setTimeout(resolve, 1000);
           })
       );
+      // Transição pulada (clique rápido, aba oculta) rejeita .ready — não é erro
+      transition.ready.catch(() => {});
     };
 
     // Captura: roda antes do onClick do <Link>, que faria o push sem transição
