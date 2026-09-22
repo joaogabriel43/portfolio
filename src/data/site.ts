@@ -8,7 +8,7 @@ import { projects } from "./projects";
 export const hero = {
   eyebrow: "Desenvolvedor Full-Stack · Porto Alegre",
   headline: ["Sistemas", "distribuídos."],
-  lead: "Java, Spring Boot e arquitetura orientada a eventos. Onze sistemas construídos do zero — cada um resolvendo um problema real de engenharia, documentado decisão por decisão.",
+  lead: `Java, Spring Boot e arquitetura orientada a eventos. ${projects.length} sistemas construídos do zero — cada um resolvendo um problema real de engenharia, documentado decisão por decisão.`,
 } as const;
 
 export interface Stat {
@@ -69,7 +69,7 @@ export const about = {
 
 export const lineupSection = {
   eyebrow: "O Lineup",
-  title: "Onze sistemas.",
+  title: `${projects.length} sistemas.`,
   subtitle:
     "Cada projeto nasceu de um problema concreto — mensageria confiável, auditoria sem acoplamento, rate limiting distribuído. Nenhum deles é tutorial.",
 } as const;
