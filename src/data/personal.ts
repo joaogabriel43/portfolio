@@ -12,7 +12,7 @@ export const personal = {
   education: {
     degree: "Sistemas de Informação",
     institution: "Unisinos",
-    status: "Cursando",
+    status: "Formado",
     graduation: "2025/2",
   },
   languages: [

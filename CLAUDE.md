@@ -603,7 +603,7 @@ LinkedIn:    linkedin.com/in/joão-gabriel-borba
 - Engenheiro de Aplicativos — Intermidia (Abril 2023 – Presente)
 - Help Desk — Compuletra (Março 2022 – Março 2023)
 
-**Formação:** Sistemas de Informação — Unisinos (previsão 2025/2)
+**Formação:** Sistemas de Informação — Unisinos (formado, 2025/2)
 
 **Projetos no portfolio (11 total)** — ordem do array em `src/data/projects.ts`.
 A coluna "Testes" é a métrica marcada `isTestTotal` que alimenta o `heroStats`:
