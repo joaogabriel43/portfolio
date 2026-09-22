@@ -6,23 +6,19 @@ interface Props {
   project: Project & { caseStudy: CaseStudy };
 }
 
-// ─── Cabeçalho numerado de seção ──────────────────────────────
+// ─── Cabeçalho de seção ───────────────────────────────────────
 function SectionHead({
-  number,
   eyebrow,
   title,
   id,
 }: {
-  number: string;
   eyebrow: string;
   title: string;
   id?: string;
 }) {
   return (
     <header className="flex flex-col gap-5">
-      <p className="eyebrow">
-        {number} — {eyebrow}
-      </p>
+      <p className="eyebrow">{eyebrow}</p>
       <h2
         id={id}
         className="display-md text-[clamp(1.9rem,4.5vw,3.2rem)] tracking-[-0.035em]"
@@ -231,11 +227,10 @@ export function CaseStudyContent({ project }: Props) {
         </dl>
       </section>
 
-      {/* ── 01 — O PROBLEMA ───────────────────────────────────── */}
+      {/* ── O PROBLEMA ────────────────────────────────────────── */}
       <section className="container-page section-y">
         <div className="mx-auto flex max-w-[1000px] flex-col gap-12">
           <SectionHead
-            number="01"
             eyebrow="O problema"
             title={`Por que o ${project.title} existe`}
           />
@@ -264,11 +259,10 @@ export function CaseStudyContent({ project }: Props) {
         </div>
       </section>
 
-      {/* ── 02 — ARQUITETURA ──────────────────────────────────── */}
+      {/* ── ARQUITETURA ───────────────────────────────────────── */}
       <section className="container-page section-y border-y border-border bg-surface">
         <div className="mx-auto flex max-w-[1000px] flex-col gap-12">
           <SectionHead
-            number="02"
             eyebrow="Arquitetura"
             title={cs.architecture.overview}
           />
@@ -278,12 +272,12 @@ export function CaseStudyContent({ project }: Props) {
               {cs.architecture.boundedContexts.length} bounded contexts
             </p>
             <ul className="mt-5 flex flex-wrap gap-2">
-              {cs.architecture.boundedContexts.map((bc, i) => (
+              {cs.architecture.boundedContexts.map((bc) => (
                 <li
                   key={bc}
                   className="rounded-full border border-border bg-background px-4 py-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted"
                 >
-                  {String(i + 1).padStart(2, "0")} {bc}
+                  {bc}
                 </li>
               ))}
             </ul>
@@ -292,12 +286,9 @@ export function CaseStudyContent({ project }: Props) {
           <div className="border-t border-border pt-9">
             <p className="eyebrow-sm">Decisões arquiteturais</p>
             <div className="mt-7 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-10">
-              {cs.architecture.keyDecisions.map((kd, i) => (
+              {cs.architecture.keyDecisions.map((kd) => (
                 <div key={kd.title} data-reveal>
-                  <p className="eyebrow-sm">
-                    Decisão {String(i + 1).padStart(2, "0")}
-                  </p>
-                  <h3 className="mt-4 text-[17px] font-medium leading-[1.35] tracking-[-0.015em]">
+                  <h3 className="text-[17px] font-medium leading-[1.35] tracking-[-0.015em]">
                     {kd.title}
                   </h3>
                   <p className="mt-3 text-[14.5px] leading-[1.6] text-muted [text-wrap:pretty]">
@@ -310,11 +301,10 @@ export function CaseStudyContent({ project }: Props) {
         </div>
       </section>
 
-      {/* ── 03 — DESAFIOS TÉCNICOS ────────────────────────────── */}
+      {/* ── DESAFIOS TÉCNICOS ─────────────────────────────────── */}
       <section className="container-page section-y">
         <div className="mx-auto flex max-w-[1000px] flex-col gap-12">
           <SectionHead
-            number="03"
             eyebrow="Desafios técnicos"
             title="Problemas reais, soluções reais."
           />
@@ -328,10 +318,7 @@ export function CaseStudyContent({ project }: Props) {
                   i === cs.challenges.length - 1 ? "border-b" : ""
                 }`}
               >
-                <p className="eyebrow-sm">
-                  Desafio {String(i + 1).padStart(2, "0")}
-                </p>
-                <h3 className="mt-4 text-[clamp(1.2rem,2.4vw,1.6rem)] font-light leading-[1.3] tracking-[-0.025em]">
+                <h3 className="text-[clamp(1.2rem,2.4vw,1.6rem)] font-light leading-[1.3] tracking-[-0.025em]">
                   {ch.title}
                 </h3>
 
@@ -368,11 +355,10 @@ export function CaseStudyContent({ project }: Props) {
         </div>
       </section>
 
-      {/* ── 04 — STACK TÉCNICA ────────────────────────────────── */}
+      {/* ── STACK TÉCNICA ─────────────────────────────────────── */}
       <section className="container-page section-y border-y border-border bg-surface">
         <div className="mx-auto flex max-w-[1000px] flex-col gap-12">
           <SectionHead
-            number="04"
             eyebrow="Stack técnica"
             title="O que tem por dentro."
           />
@@ -398,20 +384,19 @@ export function CaseStudyContent({ project }: Props) {
         </div>
       </section>
 
-      {/* ── 05 — DEMONSTRAÇÃO ─────────────────────────────────── */}
+      {/* ── DEMONSTRAÇÃO ──────────────────────────────────────── */}
       <section className="container-page section-y">
         <div className="mx-auto flex max-w-[1000px] flex-col gap-12">
-          <SectionHead number="05" eyebrow="Demonstração" title="Veja em ação." />
+          <SectionHead eyebrow="Demonstração" title="Veja em ação." />
 
           <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5">
-            {cs.demoMoments.map((dm, i) => (
+            {cs.demoMoments.map((dm) => (
               <div
                 key={dm.title}
                 data-reveal
                 className="rounded-[20px] bg-surface px-7 py-8"
               >
-                <p className="eyebrow-sm">{String(i + 1).padStart(2, "0")}</p>
-                <h3 className="mt-5 text-[17px] font-medium leading-[1.35] tracking-[-0.015em]">
+                <h3 className="text-[17px] font-medium leading-[1.35] tracking-[-0.015em]">
                   {dm.title}
                 </h3>
                 <p className="mt-3 text-[14.5px] leading-[1.6] text-muted [text-wrap:pretty]">

@@ -44,12 +44,9 @@ export function FeaturedProject() {
 
         {/* Decisões de arquitetura */}
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-12">
-          {decisions.map((decision, i) => (
+          {decisions.map((decision) => (
             <div key={decision.title} data-reveal>
-              <p className="eyebrow-sm">
-                Decisão {String(i + 1).padStart(2, "0")}
-              </p>
-              <h3 className="mt-4 text-[17px] font-medium leading-[1.35] tracking-[-0.015em]">
+              <h3 className="text-[17px] font-medium leading-[1.35] tracking-[-0.015em]">
                 {decision.title}
               </h3>
               <p className="mt-3 text-[14.5px] leading-[1.6] text-muted [text-wrap:pretty]">

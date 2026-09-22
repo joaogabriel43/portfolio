@@ -3,6 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { THEME_STORAGE_KEY, type Theme } from "@/lib/theme";
 
+// Um ícone por estado, sobrepostos no centro do botão
+const ICON =
+  "absolute transition-[transform,opacity] duration-slow ease-out";
+
 function readTheme(): Theme {
   return document.documentElement.classList.contains("dark") ? "dark" : "light";
 }
@@ -40,9 +44,11 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={toggle}
       aria-label={isDark ? "Ativar tema claro" : "Ativar tema escuro"}
       aria-pressed={mounted ? isDark : undefined}
-      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border text-muted transition-colors duration-base ease-out hover:border-border/0 hover:bg-surface-2 hover:text-foreground ${className}`}
+      className={`relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border text-muted transition-colors duration-base ease-out hover:border-border/0 hover:bg-surface-2 hover:text-foreground ${className}`}
     >
-      {/* Sol / Lua — Lucide (stroke 2px, currentColor) */}
+      {/* Sol e Lua empilhados; a troca é CSS puro (classe .dark no <html>):
+          o ícone atual gira e some, o outro entra girando. Sem depender de
+          estado, o ícone também já nasce correto na primeira pintura. */}
       <svg
         width="14"
         height="14"
@@ -53,15 +59,24 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden
+        className={`${ICON} rotate-0 scale-100 opacity-100 dark:-rotate-90 dark:scale-50 dark:opacity-0`}
       >
-        {isDark ? (
-          <>
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-          </>
-        ) : (
-          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-        )}
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+      </svg>
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+        className={`${ICON} rotate-90 scale-50 opacity-0 dark:rotate-0 dark:scale-100 dark:opacity-100`}
+      >
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
       </svg>
     </button>
   );

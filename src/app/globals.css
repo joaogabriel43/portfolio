@@ -50,6 +50,11 @@
   --dur-fast: 120ms;
   --dur-base: 200ms;
   --dur-slow: 320ms;
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* Sombra do card no hover (elevação) */
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.04),
+    0 14px 32px -10px rgba(0, 0, 0, 0.16);
 }
 
 .dark {
@@ -66,7 +71,7 @@
   --dim: #5c5b59;
 
   --accent: #2f8bff;
-  --accent-hover: #4f9dff;
+  --accent-hover: #006af0;
   --accent-fg: #ffffff;
   --accent-soft: rgba(47, 139, 255, 0.1);
   --accent-ring: rgba(47, 139, 255, 0.45);
@@ -75,6 +80,9 @@
   --negative: #ff453a;
 
   --nav-bg: rgba(8, 8, 10, 0.78);
+
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.5),
+    0 16px 36px -10px rgba(0, 0, 0, 0.75);
 
   /* Syntax highlighting (Xcode Dark) */
   --hl-keyword: #ff7ab2;
@@ -229,7 +237,7 @@
     background: var(--surface);
   }
 
-  /* Botão pill preenchido */
+  /* Botão pill preenchido — scale sutil no hover, "afunda" no press */
   .btn-pill {
     @apply inline-flex items-center justify-center gap-2;
     height: 46px;
@@ -239,11 +247,8 @@
     font-weight: 500;
     background: var(--accent);
     color: var(--accent-fg);
-    transition: opacity var(--dur-base) var(--ease-out);
-  }
-
-  .btn-pill:hover {
-    opacity: 0.85;
+    transition: transform var(--dur-base) var(--ease-spring),
+      background-color var(--dur-base) var(--ease-out);
   }
 
   .btn-pill:disabled {
@@ -261,13 +266,62 @@
     font-weight: 500;
     border: 1px solid var(--border);
     color: var(--fg);
-    transition: background-color var(--dur-base) var(--ease-out),
+    transition: transform var(--dur-base) var(--ease-spring),
+      background-color var(--dur-base) var(--ease-out),
       border-color var(--dur-base) var(--ease-out);
   }
 
-  .btn-pill-ghost:hover {
-    background: var(--surface-2);
-    border-color: var(--border-strong);
+  @media (hover: hover) and (pointer: fine) {
+    .btn-pill:not(:disabled):hover {
+      background: var(--accent-hover);
+      transform: scale(1.02);
+    }
+
+    .btn-pill-ghost:hover {
+      background: var(--surface-2);
+      border-color: var(--border-strong);
+      transform: scale(1.02);
+    }
+  }
+
+  .btn-pill:not(:disabled):active,
+  .btn-pill-ghost:active {
+    transform: scale(0.97);
+    transition-duration: var(--dur-fast);
+  }
+
+  /* Card com elevação no hover. A sombra vive num pseudo-elemento e só anima
+     opacity — box-shadow direto repintaria a cada frame. */
+  .card-lift {
+    position: relative;
+    transition: transform var(--dur-slow) var(--ease-out),
+      background-color var(--dur-slow) var(--ease-out);
+  }
+
+  .card-lift::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: var(--shadow-lift);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-slow) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card-lift:hover {
+      transform: translateY(-2px) scale(1.015);
+    }
+
+    .card-lift:hover::before {
+      opacity: 1;
+    }
+  }
+
+  .card-lift:active {
+    transform: scale(0.995);
+    transition-duration: var(--dur-fast);
   }
 
   /* Input do formulário */
@@ -317,7 +371,9 @@
   }
 }
 
-/* ── Reveal on scroll (view timeline — progressive enhancement) ── */
+/* ── Reveal on scroll (view timeline — progressive enhancement) ──
+   --i (opcional, inline) desloca a janela da animação: irmãos que entram
+   juntos na viewport terminam de revelar em sequência (stagger). */
 @keyframes revealIn {
   from {
     opacity: 0;
@@ -336,8 +392,45 @@
     [data-reveal] {
       animation: revealIn linear both;
       animation-timeline: view();
-      animation-range: entry 5% cover 26%;
+      animation-range: entry calc(5% + var(--i, 0) * 4%)
+        cover calc(26% + var(--i, 0) * 4%);
     }
+  }
+}
+
+/* ── Hero: entrada em cascata no load (CSS puro, sem JS) ──
+   Não usa view(): o hero já nasce dentro da viewport, então o progresso
+   da timeline começaria "completo". */
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero-in] {
+    animation: heroIn 800ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 110ms);
+  }
+}
+
+/* ── Transição entre páginas (View Transitions API nativa) ──
+   Cross-fade do root; o padrão do browser já usa plus-lighter, então o que é
+   igual nas duas páginas (navbar, fundo) não "pisca". */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 260ms;
+    animation-timing-function: var(--ease-out);
   }
 }
 

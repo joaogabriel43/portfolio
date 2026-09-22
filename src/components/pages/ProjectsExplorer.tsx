@@ -152,10 +152,7 @@ export function ProjectsExplorer() {
                     transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                     className="h-full"
                   >
-                    <ProjectCard
-                      project={project}
-                      index={projects.indexOf(project)}
-                    />
+                    <ProjectCard project={project} />
                   </motion.div>
                 ))}
               </AnimatePresence>

@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Analytics } from "@vercel/analytics/react";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
+import { PageTransitions } from "@/components/ui/PageTransitions";
 import "./globals.css";
 
 // ─── Site constants ───────────────────────────────────────────
@@ -148,6 +149,7 @@ export default function RootLayout({
         </a>
 
         {children}
+        <PageTransitions />
         <Analytics />
       </body>
     </html>

@@ -5,16 +5,14 @@ import { lineupSection } from "@/data/site";
 const lineup = getLineup();
 
 // ─── Card ─────────────────────────────────────────────────────
-function LineupCard({ project, index }: { project: Project; index: number }) {
+function LineupCard({ project }: { project: Project }) {
   const { label, keyword, keywordSize, stackLine } = project.lineup;
   const hasCaseStudy = Boolean(project.caseStudy);
   const href = hasCaseStudy ? `/projects/${project.id}` : project.githubUrl;
 
   return (
-    <article className="group relative flex w-[min(290px,82vw)] shrink-0 snap-center flex-col rounded-[20px] bg-surface px-[26px] py-[30px] transition-colors duration-slow ease-out hover:bg-surface-2">
-      <p className="eyebrow-sm">
-        {String(index + 1).padStart(2, "0")} · {label}
-      </p>
+    <article className="card-lift group flex w-[min(290px,82vw)] shrink-0 snap-center flex-col rounded-[20px] bg-surface px-[26px] py-[30px] hover:bg-surface-2">
+      <p className="eyebrow-sm">{label}</p>
 
       <p
         className="flex h-[148px] items-center justify-center text-center font-mono font-normal leading-tight tracking-[-0.02em] text-accent"
@@ -81,9 +79,9 @@ export function Projects() {
       </header>
 
       {/* Carrossel horizontal com scroll-snap */}
-      <div className="lineup mt-[72px] flex gap-5 overflow-x-auto pb-8 [padding-inline:max(24px,7vw)]">
-        {lineup.map((project, i) => (
-          <LineupCard key={project.id} project={project} index={i} />
+      <div className="lineup mt-[60px] flex gap-5 overflow-x-auto pb-8 pt-3 [padding-inline:max(24px,7vw)]">
+        {lineup.map((project) => (
+          <LineupCard key={project.id} project={project} />
         ))}
       </div>
 

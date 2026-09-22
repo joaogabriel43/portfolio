@@ -21,10 +21,10 @@ function BlogCard({ post, index }: { post: PostMeta; index: number }) {
   return (
     <article
       data-reveal
+      style={{ "--i": Math.min(index, 4) } as React.CSSProperties}
       className="group relative grid grid-cols-1 gap-y-4 border-t border-border py-9 md:grid-cols-[minmax(140px,200px)_1fr] md:gap-x-[clamp(24px,4vw,56px)]"
     >
       <div className="flex flex-col gap-1.5">
-        <p className="eyebrow-sm">{String(index + 1).padStart(2, "0")}</p>
         <time dateTime={post.date} className="font-mono text-[11px] text-muted">
           {formattedDate}
         </time>

@@ -3,19 +3,15 @@ import type { Project } from "@/data/projects";
 
 interface ProjectCardProps {
   project: Project;
-  index: number;
 }
 
-export function ProjectCard({ project, index }: ProjectCardProps) {
-  const paddedIndex = String(index + 1).padStart(2, "0");
+export function ProjectCard({ project }: ProjectCardProps) {
   const hasCaseStudy = Boolean(project.caseStudy);
 
   return (
-    <article className="group relative flex h-full flex-col rounded-[20px] bg-surface px-7 py-8 transition-colors duration-slow ease-out hover:bg-surface-2">
+    <article className="card-lift group flex h-full flex-col rounded-[20px] bg-surface px-7 py-8 hover:bg-surface-2">
       <div className="flex items-baseline justify-between gap-4">
-        <p className="eyebrow-sm">
-          {paddedIndex} · {project.lineup.label}
-        </p>
+        <p className="eyebrow-sm">{project.lineup.label}</p>
         <span className="tnum shrink-0 font-mono text-[10px] text-dim">
           {project.year}
         </span>

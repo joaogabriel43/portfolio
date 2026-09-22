@@ -1,5 +1,5 @@
 # CLAUDE.md — Portfolio João Gabriel Nascimento
-> Versão: 2.0.0 | Última atualização: 2026-07-28
+> Versão: 2.1.0 | Última atualização: 2026-09-21
 
 ---
 
@@ -139,6 +139,13 @@ npm run start     # Servir build de produção localmente
 npm run lint      # Checar linting
 ```
 
+### Worktree novo: rodar `npm ci` antes de tudo
+Worktree do git não traz `node_modules`. Sem `npm ci`, `npm run dev`/`build` falham.
+Ao rodar `next build`/`lint` dentro de `.claude/worktrees/*`, o ESLint pode avisar sobre
+conflito de config entre o worktree e o repositório pai — **inofensivo**, o build passa.
+Path com NBSP (U+00A0) no nome de pasta (ex.: pasta do avatar no OneDrive) quebra APIs
+que recebem string de caminho; navegar por objetos `DirectoryInfo` em vez de literais.
+
 ### Foto de perfil
 Localização original: `C:\Users\joaoz\OneDrive\Área de Trabalho\ \Parquinho do claude\Foto_de_perfil.jpg`
 Destino no projeto: `public/avatar.jpg`
@@ -171,7 +178,8 @@ O dourado/Playfair da 1.x foi inteiramente removido.
 - Código em inglês, explicações em PT-BR
 - Dados sempre importados de `src/data/` — nunca hardcoded nos componentes
 - Números agregados na home são **derivados** de `src/data/`, nunca digitados (ver "Número agregado sempre derivado")
-- Scroll reveal via CSS (`.reveal`), não via `whileInView` — ver ADR-006
+- Scroll reveal via CSS (atributo `[data-reveal]`), não via `whileInView` — ver ADR-006
+- Numeração decorativa (`01`, `02`…) sem função de ordenação real é proibida — ver "Padrão: sem numeração decorativa"
 - Blog: conteúdo em `content/blog/*.mdx`, lib em `src/lib/mdx.ts` — nunca hardcoded
 
 ### Padrão: Provider de biblioteca desce até o consumidor
@@ -220,6 +228,28 @@ Regra: no máximo **uma** métrica marcada por projeto, sempre o total canônico
 `"+"`, o agregado herda o `"+"` — não afirma precisão que a origem não tem.
 Valor atual: **778+** (9 projetos com teste declarado; `notifyflow` e
 `auditvault` não têm métrica de teste).
+
+### Padrão: sem numeração decorativa
+Numeração (`01`, `02`, "Decisão 01", "Desafio 02") só existe quando indica **ordem real**
+(passos de um processo, ranking). Numeração puramente ornamental é padrão de layout
+gerado por IA — removida. Exemplos removidos na 2.1.0: headers de seção e demo moments do
+case study, chips de bounded context, "Decisão/Desafio NN", eyebrow do `Projects.tsx`,
+índice em `ProjectCard.tsx` e `blog/page.tsx` (a data já serve de referência).
+> **Lição de lista filtrável:** em `ProjectCard.tsx` o número vinha de
+> `projects.indexOf(project)` no `ProjectsExplorer` e **mudava conforme o filtro** —
+> o mesmo projeto era "03" numa visão e "01" noutra. Não era só estética: enganava o
+> usuário. Em lista filtrável/ordenável, número derivado da posição nunca é identidade.
+> Se o `index` só servia ao número, remover a prop inteira (não deixar parâmetro morto).
+
+### Padrão: card-lift (sombra em `::before`, hover condicionado)
+`.card-lift` põe a sombra num pseudo-elemento `::before` que anima **só `opacity`** —
+animar `box-shadow` direto repinta a cada frame. O lift (translateY) só vale sob
+`@media (hover: hover) and (pointer: fine)`, para touch não ficar com hover "grudado".
+
+### Padrão: stagger via custom property `--i`
+Irmãos que entram juntos recebem `style={{ "--i": n }}` (limitar com `Math.min(i, 4)`).
+CSS: no reveal, `--i` desloca a `animation-range` (+4% por índice); no hero
+(`[data-hero-in]`), vira `animation-delay: calc(var(--i) * 110ms)`. Sem JS, sem lib.
 
 ### Padrão do Blog
 - Novo artigo = novo arquivo `.mdx` em `content/blog/`
@@ -302,7 +332,7 @@ Tailwind como valores literais, -script inline exige atenção com CSP
 **Contexto:** O reveal ao rolar era feito com `whileInView` do framer-motion em
 praticamente toda seção — o que obrigava metade da home a ser Client Component e
 prendia a lib no bundle compartilhado.
-**Decisão:** Classe `.reveal` em `globals.css` usando `animation-timeline: view()`,
+**Decisão:** Atributo `[data-reveal]` (não uma classe `.reveal`) em `globals.css` usando `animation-timeline: view()`,
 dentro de `@supports (animation-timeline: view())` **e**
 `@media (prefers-reduced-motion: no-preference)`.
 Browser sem suporte (Safari/Firefox atuais) simplesmente ignora o bloco e o
@@ -324,6 +354,19 @@ formato de `next/font` — self-hosted, sem request para domínio externo, com
 **Consequências:** +zero requisição a terceiros (privacidade e LCP), +sem binários
 de fonte no git, +atualização por `npm update` | -uma dependência a mais
 (a **única** adicionada na 2.0.0)
+**Status:** Aceita
+
+### ADR-008: View Transitions via CSS + `PageTransitions.tsx`
+**Contexto:** Transição suave entre páginas. O Next 14 não tem suporte nativo a View
+Transitions no App Router.
+**Decisão:** `@view-transition { navigation: auto; }` + `::view-transition-old/new(root)`
+(260ms) em `globals.css`, tudo sob `prefers-reduced-motion: no-preference`. Um Client
+Component `PageTransitions.tsx` (montado no `layout.tsx`) intercepta cliques em links
+internos, envolve `router.push` em `document.startViewTransition`, resolve quando o
+pathname muda e tem timeout de segurança de 1000ms.
+**Consequências:** +transição sem lib, +degrada para navegação normal sem suporte
+| -**back/forward do navegador não têm transição** (não passam pelo clique interceptado),
+-um client component a mais no layout
 **Status:** Aceita
 
 ---
@@ -406,6 +449,23 @@ ou limpar o comentário: `sed 's/[[:space:]]*#.*$//' | xargs`.
 resultado do teste.** Um diagnóstico com input contaminado produz uma causa raiz
 convincente e falsa — pior do que não ter diagnóstico.
 
+### [2026-09-21] Erro: contraste insuficiente de token de cor não é bug de motion
+**O que aconteceu:** Na revisão da rodada de motion, o hover do `.btn-pill` no tema
+escuro ficou ilegível. A suspeita natural foi animação/transição, mas o problema era o
+**token**: `--accent-hover: #4f9dff` (mais claro que o repouso) com texto branco dá
+**2,76:1**, abaixo do mínimo AA de 4,5:1.
+**Por que:** No tema claro o hover escurece (`#2f5d75` → `#26495c`, 9,59:1); no escuro
+foi copiado o mesmo raciocínio de "hover = mais vivo" clareando o azul, o que reduz o
+contraste com `--accent-fg: #ffffff`.
+**Como prevenir:** Ao definir par fundo/texto em token, **calcular a razão WCAG**
+((L1+0,05)/(L2+0,05), luminância relativa) antes de aceitar — não estimar a olho. Em
+tema escuro com texto branco, o hover de botão preenchido deve **escurecer**.
+**Correção:** mesma matiz (~213°), só a luminosidade: `#4f9dff` → `#006af0` (HSL L 65% →
+47%), **4,86:1** com branco.
+**Pendência conhecida:** o `--accent` de repouso do escuro (`#2f8bff`) dá 3,36:1 com
+branco — também abaixo de 4,5:1 para texto de botão. Não alterado (fora do pedido);
+avaliar escurecer para ~`#006cf5` (4,7:1) ou usar `--accent-fg` escuro.
+
 ---
 
 ## 🚀 Otimizações e Performance
@@ -417,7 +477,7 @@ o `MotionConfig` vivia no `app/layout.tsx`, e quase toda seção usava `whileInV
 **O que foi feito (em ordem de impacto):**
 1. `MotionConfig` movido do root layout para `ProjectsExplorer.tsx` — framer-motion
    saiu do bundle compartilhado e ficou restrito a `/projects` (ADR-006)
-2. `whileInView` → classe CSS `.reveal` com `animation-timeline: view()` (ADR-006)
+2. `whileInView` → atributo CSS `[data-reveal]` com `animation-timeline: view()` (ADR-006)
 3. Seções voltaram a ser **Server Components** (sem `"use client"`); só
    `Navbar`, `ThemeToggle`, `ContactForm` e `ProjectsExplorer` seguem client
 4. 12 componentes deletados (wrappers `Button`/`Card`/`SectionLabel`, o
@@ -587,6 +647,7 @@ A Vercel atribui um domínio automático no primeiro deploy (ex: `portfolio-xyz.
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 2.1.0 | 2026-09-21 | **Motion seletivo (estilo 21st.dev) + limpeza.** ADR-008 (View Transitions via CSS + `PageTransitions.tsx`); padrões card-lift e stagger `--i`; **correção:** reveal é `[data-reveal]`, não `.reveal` (ADR-006 e Otimizações); padrão "sem numeração decorativa" (7 casos removidos; lição do índice que mudava com o filtro em `ProjectCard`); Ambiente: `npm ci` em worktree novo, aviso de ESLint inofensivo, pasta com NBSP; Erros Conhecidos: contraste de token ≠ bug de motion — `--accent-hover` dark `#4f9dff` (2,76:1) → `#006af0` (4,86:1) |
 | 2.0.0 | 2026-07-28 | **Migração visual "A Final"** — ADR-005 (design tokens + tema claro/escuro), ADR-006 (scroll reveal em CSS), ADR-007 (fonte `geist`); padrões "Provider desce até o consumidor", "Hairline via gap de grid", "Stretched link", "Número agregado sempre derivado"; otimização −62 kB na home; 12 componentes removidos e âncoras alteradas. **Debugging do formulário** — nova seção "Erros Conhecidos" com o `{data, error}` do Resend, o submit pré-hidratação e o comentário inline em `.env.local`; limitação do remetente `onboarding@resend.dev` documentada. Lista de projetos corrigida (5 → 11) |
 | 1.3.0 | 2026-05-05 | Blog MDX completo + Vercel Analytics + Navbar dual-link + ADR-004 + padrões ESLint |
 | 1.2.0 | 2026-03-27 | About layout: float magazine-style + case study page /projects/[slug] + Parallax3DLayer em todas as seções + grain melhorado |

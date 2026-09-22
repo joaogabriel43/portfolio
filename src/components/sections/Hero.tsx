@@ -1,5 +1,8 @@
 import { hero, heroStats } from "@/data/site";
 
+// Índice do stagger — o CSS multiplica por 110ms (ver [data-hero-in])
+const stagger = (i: number) => ({ "--i": i }) as React.CSSProperties;
+
 export function Hero() {
   return (
     <>
@@ -7,15 +10,25 @@ export function Hero() {
         id="hero"
         className="container-page flex min-h-[calc(100vh-48px)] flex-col justify-center gap-10 pb-[72px] pt-24"
       >
-        <p className="eyebrow">{hero.eyebrow}</p>
+        <p className="eyebrow" data-hero-in style={stagger(0)}>
+          {hero.eyebrow}
+        </p>
 
-        <h1 className="display-xl text-[clamp(3.2rem,10.5vw,9.5rem)]">
+        <h1
+          className="display-xl text-[clamp(3.2rem,10.5vw,9.5rem)]"
+          data-hero-in
+          style={stagger(1)}
+        >
           {hero.headline[0]}
           <br />
           {hero.headline[1]}
         </h1>
 
-        <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-8 border-t border-border pt-7">
+        <div
+          className="flex flex-wrap items-end justify-between gap-x-12 gap-y-8 border-t border-border pt-7"
+          data-hero-in
+          style={stagger(2)}
+        >
           <p className="max-w-[440px] text-[17px] leading-[1.55] text-muted [text-wrap:pretty]">
             {hero.lead}
           </p>
