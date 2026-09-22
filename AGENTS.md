@@ -59,7 +59,7 @@ src/
 │   └── mdx.ts              # getAllPosts() + getPostBySlug() — gray-matter + reading-time
 └── data/
     ├── personal.ts         # Nome, bio, contatos, idiomas, formação
-    ├── projects.ts         # 5 projetos: FortunAI, NotifyFlow, AuditVault, ContractGuard, RoutineFlow
+    ├── projects.ts         # 5 projetos: Pondero, NotifyFlow, AuditVault, ContractGuard, RoutineFlow
     ├── skills.ts           # Grupos de skills + soft skills
     ├── experience.ts       # Experiências com achievements[]
     └── certificates.ts     # Certificados agrupados por instituição
@@ -230,7 +230,7 @@ LinkedIn:    linkedin.com/in/joão-gabriel-borba
 **Formação:** Sistemas de Informação — Unisinos (previsão 2025/2)
 
 **Projetos no portfolio (5 total):**
-1. `finassistant` (FortunAI) — Next.js + Java + Spring Boot + PostgreSQL + AI (featured, col 8/12)
+1. `pondero` (ex-FortunAI) — Next.js + Java + Spring Boot + PostgreSQL + AI (featured, col 8/12)
 2. `notifyflow` — Java + Spring Boot + RabbitMQ + Outbox Pattern (col 4/12)
 3. `auditvault` — Java + Spring Boot + Event Sourcing + CQRS (col 6/12)
 4. `contractguard` — Java + Spring Boot + OpenAPI diff + GitHub Actions (col 6/12)

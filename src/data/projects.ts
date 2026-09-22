@@ -16,7 +16,7 @@ export interface CaseStudy {
      * (ver `totalTests` em src/data/site.ts).
      *
      * Só pode existir UMA por projeto. Não marcar métricas que sejam
-     * decomposição de outra — em finassistant, por exemplo, "Testes
+     * decomposição de outra — em pondero, por exemplo, "Testes
      * backend" (238) + "Testes frontend" (91) formam os "Testes
      * automatizados" (329); apenas o 329 é marcado.
      */
@@ -65,7 +65,7 @@ export function getLineup(): Project[] {
 // ─── Data ────────────────────────────────────────────────────
 export const projects: Project[] = [
   {
-    id: "finassistant",
+    id: "pondero",
     tags: ["Backend", "AI / LLM"],
     lineup: {
       order: 1,
@@ -74,7 +74,7 @@ export const projects: Project[] = [
       keywordSize: 26,
       stackLine: "Java 17 · Next.js · Gemini · PostgreSQL",
     },
-    title: "FortunAI",
+    title: "Pondero",
     description:
       "Assistente financeiro inteligente com integração de IA para análise de portfólios e recomendações personalizadas.",
     longDescription:
@@ -87,13 +87,13 @@ export const projects: Project[] = [
       "PostgreSQL",
       "AI Integration",
     ],
-    githubUrl: "https://github.com/joaogabriel43/finassistant",
-    liveUrl: "https://finassistant-frontend.vercel.app/login",
+    githubUrl: "https://github.com/joaogabriel43/fortunai-frontend",
+    liveUrl: "https://www.pondero.com.br",
     featured: true,
     year: 2025,
     caseStudy: {
       problem:
-        "Quem cuida das próprias finanças usa um app para gastos, outro para investimentos, uma planilha para metas — e nunca tem visão unificada. O FortunAI resolve isso com uma interface conversacional: você digita 'gastei 80 reais no mercado' e a despesa é registrada, categorizada e refletida no dashboard instantaneamente. Digita 'comprei 10 PETR4 a 37 reais' e o portfólio é atualizado com preço médio ponderado automático.",
+        "Quem cuida das próprias finanças usa um app para gastos, outro para investimentos, uma planilha para metas — e nunca tem visão unificada. O Pondero resolve isso com uma interface conversacional: você digita 'gastei 80 reais no mercado' e a despesa é registrada, categorizada e refletida no dashboard instantaneamente. Digita 'comprei 10 PETR4 a 37 reais' e o portfólio é atualizado com preço médio ponderado automático.",
       architecture: {
         overview: "DDD + Arquitetura Hexagonal",
         boundedContexts: [

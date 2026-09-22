@@ -219,7 +219,7 @@ calcula tudo a partir de `src/data/projects.ts`:
 - **Testes escritos** → soma das métricas marcadas `isTestTotal: true` nos case studies
 
 A flag `isTestTotal` é **opt-in explícito**, não heurística de label. Motivo:
-buscar `label.includes("Testes")` conta duas vezes — o `finassistant` declara
+buscar `label.includes("Testes")` conta duas vezes — o `pondero` declara
 "Testes automatizados 329" **e** sua decomposição ("Testes backend 238" +
 "Testes frontend 91"), o que produziria 658 num único projeto.
 Regra: no máximo **uma** métrica marcada por projeto, sempre o total canônico.
@@ -561,7 +561,7 @@ A coluna "Testes" é a métrica marcada `isTestTotal` que alimenta o `heroStats`
 
 | # | id | Stack / tema | Testes |
 |---|----|--------------|--------|
-| 1 | `finassistant` (FortunAI) | Next.js + Java + Spring Boot + PostgreSQL + AI | 329 |
+| 1 | `pondero` (ex-FortunAI) | Next.js + Java + Spring Boot + PostgreSQL + AI | 329 |
 | 2 | `notifyflow` | Java + Spring Boot + RabbitMQ + Outbox Pattern | — |
 | 3 | `auditvault` | Java + Spring Boot + Event Sourcing + CQRS | — |
 | 4 | `contractguard` | Java + Spring Boot + OpenAPI diff + GitHub Actions | 90+ |

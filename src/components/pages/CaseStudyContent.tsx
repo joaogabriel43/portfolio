@@ -29,7 +29,7 @@ function SectionHead({
   );
 }
 
-// ─── Diagrama: roteamento (FortunAI) ──────────────────────────
+// ─── Diagrama: roteamento (Pondero) ──────────────────────────
 function RoutingDiagram() {
   const outputs = [
     { label: "Local", sub: "CatalogoAtivoService — zero custo de API" },
@@ -145,7 +145,7 @@ const DIAGRAMS: Record<string, { label: string; render: () => JSX.Element }> = {
     label: "Fluxo de entrega com fallback",
     render: () => <DeliveryDiagram />,
   },
-  finassistant: {
+  pondero: {
     label: "Fluxo de roteamento",
     render: () => <RoutingDiagram />,
   },
