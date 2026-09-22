@@ -82,7 +82,9 @@ export function Projects() {
       </header>
 
       {/* Carrossel horizontal com scroll-snap */}
-      <div className="lineup mt-[60px] flex gap-5 overflow-x-auto pb-8 pt-3 [padding-inline:max(24px,7vw)]">
+      {/* overflow-x:auto força overflow-y:auto (spec), o que corta a sombra do
+          hover na base — pb-12 dá folga suficiente para o --shadow-lift completo. */}
+      <div className="lineup mt-[60px] flex gap-5 overflow-x-auto pb-12 pt-3 [padding-inline:max(24px,7vw)]">
         {lineup.map((project) => (
           <LineupCard key={project.id} project={project} />
         ))}

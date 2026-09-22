@@ -1,5 +1,5 @@
 # CLAUDE.md — Portfolio João Gabriel Nascimento
-> Versão: 2.1.0 | Última atualização: 2026-09-21
+> Versão: 2.1.1 | Última atualização: 2026-09-22
 
 ---
 
@@ -37,6 +37,8 @@ src/
 │   │   ├── page.tsx        # /blog — lista estática de artigos (SSG)
 │   │   └── [slug]/
 │   │       └── page.tsx    # /blog/[slug] — post com MDXRemote + generateStaticParams
+│   ├── sitemap.ts          # /sitemap.xml — gerado de rotas estáticas + projects.ts + getAllPosts()
+│   ├── robots.ts           # /robots.txt — allow all, referencia o sitemap
 │   └── api/
 │       └── contact/
 │           └── route.ts    # POST handler com Resend + rate limiting
@@ -70,10 +72,11 @@ src/
     ├── experience.ts       # Experiências com achievements[]
     └── certificates.ts     # Certificados agrupados por instituição
 public/
-├── avatar.jpg              # Foto de perfil
-├── robots.txt
-└── sitemap.xml
+└── avatar.jpg              # Foto de perfil
 ```
+`/sitemap.xml` e `/robots.txt` **não são arquivos estáticos em `public/`** — são
+gerados em build time por `src/app/sitemap.ts`/`robots.ts` (arquivos especiais do
+App Router), sempre em sincronia com `projects.ts`/`getAllPosts()`.
 
 ### Removidos na 2.0.0
 `ui/Button.tsx` · `ui/Card.tsx` · `ui/SectionLabel.tsx` · `ui/SkillTag.tsx` ·
@@ -164,7 +167,8 @@ Nenhuma cor literal em componente. Tudo sai dos tokens de `globals.css` (ver ADR
 | `--border` | `#d2d2d7` | `#26262a` |
 | `--fg` | `#1d1d1f` | `#f4f2ef` |
 | `--muted` | `#6e6e73` | `#8c8a88` |
-| `--accent` | `#2f5d75` (azul-petróleo) | `#2f8bff` |
+| `--accent` (fundo: botão, borda, `::selection`) | `#2f5d75` (azul-petróleo) | `#006cf5` |
+| `--accent-text` (texto/link/ícone) | `#2f5d75` | `#2f8bff` |
 | `--positive` / `--negative` | `#1a7f4b` / `#c0392b` | `#34d399` / `#ff453a` |
 
 Movimento também é token: `--ease-out: cubic-bezier(0.16,1,0.3,1)` ·
@@ -250,6 +254,27 @@ animar `box-shadow` direto repinta a cada frame. O lift (translateY) só vale so
 Irmãos que entram juntos recebem `style={{ "--i": n }}` (limitar com `Math.min(i, 4)`).
 CSS: no reveal, `--i` desloca a `animation-range` (+4% por índice); no hero
 (`[data-hero-in]`), vira `animation-delay: calc(var(--i) * 110ms)`. Sem JS, sem lib.
+
+### Padrão: `--accent` (fundo) separado de `--accent-text` (texto)
+Um único token para fundo de botão **e** cor de link/texto não dá pra otimizar
+contraste dos dois independentemente — o mesmo azul precisa de luminosidade
+diferente conforme o fundo atrás dele (bg sólido vs texto sobre `--bg`/`--surface`).
+`--accent` fica reservado a fundo de botão, borda de foco e `::selection`;
+`--accent-text` é a única cor usada em texto, link, ícone e `.prose-blog a`.
+`--accent-hover`/`--accent-ring` derivam de `--accent`. Ver "Erros Conhecidos"
+para os números de contraste que motivaram a separação.
+
+### Padrão: `overflow-x: auto` corta sombra vertical do conteúdo
+Definir `overflow-x` como algo diferente de `visible` força `overflow-y` a
+computar como `auto` (spec CSS Overflow) mesmo se você nunca declarou
+`overflow-y` — todo browser atual ainda implementa assim. Resultado: qualquer
+`box-shadow` de um filho que ultrapasse a borda inferior do container (ex.:
+`.card-lift::before` no hover) é clipado, mesmo achando que só o eixo X está
+com overflow controlado. Não dá pra "consertar" com `overflow-y: visible`
+explícito — não tem efeito. Fix: `padding-bottom` no container-scroll grande o
+bastante para conter a extensão máxima do `--shadow-lift` (usado no `.lineup`
+de `Projects.tsx`, `pb-12`). Não é gambiarra — é a única saída sem trocar o
+carrossel de `overflow-x` por transform/JS.
 
 ### Padrão do Blog
 - Novo artigo = novo arquivo `.mdx` em `content/blog/`
@@ -368,6 +393,11 @@ pathname muda e tem timeout de segurança de 1000ms.
 | -**back/forward do navegador não têm transição** (não passam pelo clique interceptado),
 -um client component a mais no layout
 **Status:** Aceita
+> **2026-09-22:** removido o `e.stopPropagation()` do listener de captura. O
+> `<Link>` do Next já verifica `e.defaultPrevented` antes de navegar — só
+> `preventDefault()` basta para interceptar. `stopPropagation()` bloquearia
+> qualquer `onClick` React futuro no mesmo link (fase de bubble roda depois da
+> captura), sem necessidade nenhuma para a view transition funcionar.
 
 ---
 
@@ -462,9 +492,28 @@ contraste com `--accent-fg: #ffffff`.
 tema escuro com texto branco, o hover de botão preenchido deve **escurecer**.
 **Correção:** mesma matiz (~213°), só a luminosidade: `#4f9dff` → `#006af0` (HSL L 65% →
 47%), **4,86:1** com branco.
-**Pendência conhecida:** o `--accent` de repouso do escuro (`#2f8bff`) dá 3,36:1 com
-branco — também abaixo de 4,5:1 para texto de botão. Não alterado (fora do pedido);
-avaliar escurecer para ~`#006cf5` (4,7:1) ou usar `--accent-fg` escuro.
+**Resolvido (2026-09-21):** o `--accent` de repouso do escuro também escureceu de
+`#2f8bff` (3,36:1) para `#006cf5` (4,70:1) com branco, mesma matiz. Na sequência,
+`--accent-hover` recalculado para `#0060da` (5,70:1) e o token virou fundo-only —
+toda cor de **texto** (link, ícone, `.prose-blog a`) migrou para um token novo,
+`--accent-text` (`#2f8bff`, 5,96:1 sobre `--bg`), porque não dá pra otimizar
+contraste de fundo-de-botão e de texto-sobre-fundo-claro com o mesmo valor. Ver
+"Padrão: `--accent` (fundo) separado de `--accent-text` (texto)".
+
+### [2026-09-21] Erro: `prefers-reduced-motion` sem `!important` em `@layer base` não vence
+**O que aconteceu:** A regra de reduced-motion (zera `animation-duration`/
+`transition-duration` globalmente) não suprimia a transição de alguns componentes
+mesmo com o override presente em `globals.css`.
+**Por que:** A regra vive dentro de `@layer base` (ver `globals.css` ~linha 159). O
+Tailwind injeta `@layer utilities` **depois** de `base` na cascata, então qualquer
+`transition-*` do Tailwind aplicado inline num componente (`utilities`) tem
+especificidade igual mas ordem de layer maior — vence sem `!important`, mesmo a
+regra de reduced-motion sendo mais específica em seletor (`*, *::before, *::after`).
+**Como prevenir:** Overrides de acessibilidade que precisam vencer **qualquer**
+`@layer utilities` do Tailwind levam `!important` de propósito — é a exceção
+consciente à regra geral de "evitar `!important`", porque a alternativa (subir a
+regra para depois de `utilities` ou repetir `motion-reduce:` em cada classe) é
+mais frágil e mais fácil de esquecer num componente novo.
 
 ---
 
@@ -647,6 +696,7 @@ A Vercel atribui um domínio automático no primeiro deploy (ex: `portfolio-xyz.
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 2.1.1 | 2026-09-22 | **Fechamento da rodada de motion.** `sitemap.ts`/`robots.ts` (App Router, dinâmicos — corrige a Estrutura de Pastas que ainda listava como estático em `public/`); `PageTransitions.tsx` sem `stopPropagation()` redundante (ADR-008); `.lineup` `pb-8`→`pb-12` (overflow-x força overflow-y, cortava a sombra do `.card-lift` no hover — novo padrão documentado); token `--accent`/`--accent-text` separado (fundo vs texto) documentado como padrão; "pendência conhecida" do contraste do `--accent` escuro marcada como resolvida (`#2f8bff`→`#006cf5`, 4,70:1); novo erro conhecido do `!important` em `@layer base` para reduced-motion vencer `@layer utilities` do Tailwind |
 | 2.1.0 | 2026-09-21 | **Motion seletivo (estilo 21st.dev) + limpeza.** ADR-008 (View Transitions via CSS + `PageTransitions.tsx`); padrões card-lift e stagger `--i`; **correção:** reveal é `[data-reveal]`, não `.reveal` (ADR-006 e Otimizações); padrão "sem numeração decorativa" (7 casos removidos; lição do índice que mudava com o filtro em `ProjectCard`); Ambiente: `npm ci` em worktree novo, aviso de ESLint inofensivo, pasta com NBSP; Erros Conhecidos: contraste de token ≠ bug de motion — `--accent-hover` dark `#4f9dff` (2,76:1) → `#006af0` (4,86:1) |
 | 2.0.0 | 2026-07-28 | **Migração visual "A Final"** — ADR-005 (design tokens + tema claro/escuro), ADR-006 (scroll reveal em CSS), ADR-007 (fonte `geist`); padrões "Provider desce até o consumidor", "Hairline via gap de grid", "Stretched link", "Número agregado sempre derivado"; otimização −62 kB na home; 12 componentes removidos e âncoras alteradas. **Debugging do formulário** — nova seção "Erros Conhecidos" com o `{data, error}` do Resend, o submit pré-hidratação e o comentário inline em `.env.local`; limitação do remetente `onboarding@resend.dev` documentada. Lista de projetos corrigida (5 → 11) |
 | 1.3.0 | 2026-05-05 | Blog MDX completo + Vercel Analytics + Navbar dual-link + ADR-004 + padrões ESLint |
