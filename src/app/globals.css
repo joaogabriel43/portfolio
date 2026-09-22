@@ -25,9 +25,10 @@
   /* Accent */
   --accent: #2f5d75;
   --accent-hover: #26495c;
+  --accent-text: #2f5d75;
   --accent-fg: #ffffff;
   --accent-soft: rgba(47, 93, 117, 0.08);
-  --accent-ring: rgba(47, 93, 117, 0.35);
+  --accent-ring: rgba(47, 93, 117, 0.7);
 
   /* Semânticos */
   --positive: #1a7f4b;
@@ -71,10 +72,11 @@
   --dim: #5c5b59;
 
   --accent: #006cf5;
-  --accent-hover: #006af0;
+  --accent-hover: #0060da;
+  --accent-text: #2f8bff;
   --accent-fg: #ffffff;
   --accent-soft: rgba(47, 139, 255, 0.1);
-  --accent-ring: rgba(47, 139, 255, 0.45);
+  --accent-ring: rgba(47, 139, 255, 0.7);
 
   --positive: #34d399;
   --negative: #ff453a;
@@ -489,7 +491,7 @@
 }
 
 .prose-blog a {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;

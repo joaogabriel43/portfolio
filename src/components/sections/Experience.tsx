@@ -28,7 +28,7 @@ export function Experience() {
               <div>
                 <p
                   className={`font-mono text-[10px] uppercase tracking-[0.18em] ${
-                    isCurrent(exp.period) ? "text-accent" : "text-muted"
+                    isCurrent(exp.period) ? "text-accent-text" : "text-muted"
                   }`}
                 >
                   {exp.period}

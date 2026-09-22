@@ -15,7 +15,7 @@ function LineupCard({ project }: { project: Project }) {
       <p className="eyebrow-sm">{label}</p>
 
       <p
-        className="flex h-[148px] items-center justify-center text-center font-mono font-normal leading-tight tracking-[-0.02em] text-accent"
+        className="flex h-[148px] items-center justify-center text-center font-mono font-normal leading-tight tracking-[-0.02em] text-accent-text"
         style={{ fontSize: `${keywordSize}px` }}
         aria-hidden
       >
@@ -55,7 +55,7 @@ function LineupCard({ project }: { project: Project }) {
           href={project.githubUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="relative z-10 mt-3 w-fit font-mono text-[10.5px] text-muted underline-offset-4 transition-colors duration-base ease-out hover:text-accent hover:underline"
+          className="relative z-10 mt-3 w-fit font-mono text-[10.5px] text-muted underline-offset-4 transition-colors duration-base ease-out hover:text-accent-text hover:underline"
         >
           GitHub ↗
         </a>
@@ -88,7 +88,7 @@ export function Projects() {
       <div className="container-page mt-4 flex justify-center">
         <Link
           href="/projects"
-          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
+          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent-text"
         >
           Explorar os {lineup.length} projetos
           <span className="transition-transform duration-base ease-out group-hover:translate-x-1">

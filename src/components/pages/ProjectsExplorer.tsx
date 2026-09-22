@@ -60,7 +60,7 @@ export function ProjectsExplorer() {
         <header className="flex flex-col gap-6">
           <Link
             href="/#projects"
-            className="group inline-flex w-fit items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
+            className="group inline-flex w-fit items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent-text"
           >
             <span className="inline-block transition-transform duration-base ease-out group-hover:-translate-x-1">
               ←
@@ -179,7 +179,7 @@ export function ProjectsExplorer() {
           <div className="mt-12 text-center">
             <button
               onClick={clearFilters}
-              className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
+              className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent-text"
             >
               Limpar filtros ✕
             </button>

@@ -49,8 +49,8 @@ function RoutingDiagram() {
       </p>
 
       <div className="rounded-[11px] border border-accent bg-accent-soft px-4 py-3">
-        <p className="eyebrow-sm text-accent">Roteador</p>
-        <p className="mt-1.5 text-[14.5px] font-medium text-accent">
+        <p className="eyebrow-sm text-accent-text">Roteador</p>
+        <p className="mt-1.5 text-[14.5px] font-medium text-accent-text">
           Classificação inteligente
         </p>
         <p className="mt-1 font-mono text-[10px] text-muted">
@@ -164,7 +164,7 @@ export function CaseStudyContent({ project }: Props) {
           <div className="flex items-center justify-between gap-4">
             <Link
               href="/projects"
-              className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
+              className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent-text"
             >
               <span className="inline-block transition-transform duration-base ease-out group-hover:-translate-x-1">
                 ←
@@ -219,7 +219,7 @@ export function CaseStudyContent({ project }: Props) {
           {cs.metrics.map((m) => (
             <div key={m.label} className="px-5 py-9 text-center">
               <dt className="eyebrow-sm">{m.label}</dt>
-              <dd className="tnum mt-3 font-mono text-[clamp(1.7rem,3.4vw,2.2rem)] font-light leading-none tracking-[-0.02em] text-accent">
+              <dd className="tnum mt-3 font-mono text-[clamp(1.7rem,3.4vw,2.2rem)] font-light leading-none tracking-[-0.02em] text-accent-text">
                 {m.value}
               </dd>
             </div>
@@ -427,7 +427,7 @@ export function CaseStudyContent({ project }: Props) {
             </a>
             <Link
               href="/projects"
-              className="group ml-auto inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
+              className="group ml-auto inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent-text"
             >
               <span className="inline-block transition-transform duration-base ease-out group-hover:-translate-x-1">
                 ←

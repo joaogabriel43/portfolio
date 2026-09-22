@@ -43,7 +43,7 @@ export function Contact() {
           <div className="flex flex-col gap-9">
             <a
               href={`mailto:${personal.email}`}
-              className="border-b border-border pb-3.5 text-[clamp(1.1rem,2.4vw,1.6rem)] font-light leading-[1.3] tracking-[-0.02em] text-accent transition-opacity duration-base ease-out hover:opacity-70"
+              className="border-b border-border pb-3.5 text-[clamp(1.1rem,2.4vw,1.6rem)] font-light leading-[1.3] tracking-[-0.02em] text-accent-text transition-opacity duration-base ease-out hover:opacity-70"
             >
               {personal.email}
             </a>
@@ -58,7 +58,7 @@ export function Contact() {
                         href={href}
                         target={href.startsWith("http") ? "_blank" : undefined}
                         rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                        className="transition-colors duration-base ease-out hover:text-accent"
+                        className="transition-colors duration-base ease-out hover:text-accent-text"
                       >
                         {value}
                       </a>

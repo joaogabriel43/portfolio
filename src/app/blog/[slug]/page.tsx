@@ -73,7 +73,7 @@ export default function BlogPostPage({
           {/* ── Back link ── */}
           <Link
             href="/blog"
-            className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
+            className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent-text"
           >
             <span className="inline-block transition-transform duration-base ease-out group-hover:-translate-x-1">
               ←
@@ -114,7 +114,7 @@ export default function BlogPostPage({
           >
             <Link
               href="/blog"
-              className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
+              className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent-text"
             >
               <span className="inline-block transition-transform duration-base ease-out group-hover:-translate-x-1">
                 ←
@@ -123,7 +123,7 @@ export default function BlogPostPage({
             </Link>
             <Link
               href="/#contact"
-              className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-accent transition-opacity duration-base ease-out hover:opacity-70"
+              className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-accent-text transition-opacity duration-base ease-out hover:opacity-70"
             >
               Entre em contato
               <span className="inline-block transition-transform duration-base ease-out group-hover:translate-x-1">

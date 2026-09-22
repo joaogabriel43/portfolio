@@ -49,7 +49,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         {hasCaseStudy && (
           <Link
             href={`/projects/${project.id}`}
-            className="text-accent transition-opacity duration-base ease-out hover:opacity-70"
+            className="text-accent-text transition-opacity duration-base ease-out hover:opacity-70"
           >
             Case study →
           </Link>
@@ -58,7 +58,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           href={project.githubUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-muted transition-colors duration-base ease-out hover:text-accent"
+          className="text-muted transition-colors duration-base ease-out hover:text-accent-text"
         >
           GitHub ↗
         </a>
@@ -67,7 +67,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             href={project.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted transition-colors duration-base ease-out hover:text-accent"
+            className="text-muted transition-colors duration-base ease-out hover:text-accent-text"
           >
             Demo ↗
           </a>

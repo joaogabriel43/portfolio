@@ -25,6 +25,7 @@ const config: Config = {
         dim: "var(--dim)",
         accent: "var(--accent)",
         "accent-fg": "var(--accent-fg)",
+        "accent-text": "var(--accent-text)",
         "accent-soft": "var(--accent-soft)",
         positive: "var(--positive)",
         negative: "var(--negative)",

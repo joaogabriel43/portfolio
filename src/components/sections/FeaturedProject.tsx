@@ -35,7 +35,7 @@ export function FeaturedProject() {
           {metrics.map((metric) => (
             <div key={metric.label} className="px-5 py-8 text-center">
               <dt className="eyebrow-sm">{metric.label}</dt>
-              <dd className="tnum mt-3 font-mono text-[clamp(2.2rem,5vw,3.6rem)] font-light leading-none tracking-[-0.03em] text-accent">
+              <dd className="tnum mt-3 font-mono text-[clamp(2.2rem,5vw,3.6rem)] font-light leading-none tracking-[-0.03em] text-accent-text">
                 {metric.value}
               </dd>
             </div>

@@ -35,7 +35,7 @@ function BlogCard({ post, index }: { post: PostMeta; index: number }) {
         <h2 className="text-[clamp(1.3rem,2.6vw,1.8rem)] font-light leading-[1.25] tracking-[-0.03em]">
           <Link
             href={`/blog/${post.slug}`}
-            className="transition-colors duration-base ease-out after:absolute after:inset-0 after:content-[''] group-hover:text-accent"
+            className="transition-colors duration-base ease-out after:absolute after:inset-0 after:content-[''] group-hover:text-accent-text"
           >
             {post.title}
           </Link>
@@ -94,7 +94,7 @@ export default function BlogPage() {
           <div className="mt-14">
             <Link
               href="/"
-              className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent"
+              className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition-colors duration-base ease-out hover:text-accent-text"
             >
               <span className="inline-block transition-transform duration-base ease-out group-hover:-translate-x-1">
                 ←
