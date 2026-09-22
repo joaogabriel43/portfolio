@@ -66,7 +66,7 @@ src/
 │   └── theme.ts            # THEME_INIT_SCRIPT — aplica tema antes da 1ª pintura
 └── data/
     ├── personal.ts         # Nome, bio, contatos, idiomas, formação
-    ├── projects.ts         # 11 projetos + caseStudy.metrics[].isTestTotal
+    ├── projects.ts         # 16 projetos + caseStudy.metrics[].isTestTotal
     ├── site.ts             # Copy da home + heroStats DERIVADOS de projects.ts
     ├── skills.ts           # Grupos de skills + soft skills
     ├── experience.ts       # Experiências com achievements[]
@@ -603,9 +603,9 @@ LinkedIn:    linkedin.com/in/joão-gabriel-borba
 - Engenheiro de Aplicativos — Intermidia (Abril 2023 – Presente)
 - Help Desk — Compuletra (Março 2022 – Março 2023)
 
-**Formação:** Sistemas de Informação — Unisinos (previsão 2025/2)
+**Formação:** Sistemas de Informação — Unisinos (formado, 2025/2)
 
-**Projetos no portfolio (11 total)** — ordem do array em `src/data/projects.ts`.
+**Projetos no portfolio (16 total)** — ordem do array em `src/data/projects.ts`.
 A coluna "Testes" é a métrica marcada `isTestTotal` que alimenta o `heroStats`:
 
 | # | id | Stack / tema | Testes |
@@ -621,9 +621,15 @@ A coluna "Testes" é a métrica marcada `isTestTotal` que alimenta o `heroStats`
 | 9 | `flowguard` | Infra / DevOps | 21 |
 | 10 | `apiforge` | Developer tooling | 48 |
 | 11 | `java-mcp-hub` | MCP server em Java | 27 |
+| 12 | `budgetlens` | Java + Spring Batch + OpenAI + PostgreSQL | — |
+| 13 | `observastack` | Java + Resilience4j + Angular 17 + JFR | — |
+| 14 | `schemasync` | Java + JSQLParser + GitHub Actions + JWT | — |
+| 15 | `datasentry` | Java + Spring Batch + PostgreSQL + Angular 17 | — |
+| 16 | `lgpdflow` | Java + Virtual Threads + PostgreSQL RLS + Next.js 14 | — |
 
-`auditvault` é o `featuredProjectId` em `site.ts`. `notifyflow` e `auditvault`
-não declaram métrica de teste — por isso o agregado é 778+, não a soma de 11 itens.
+`auditvault` é o `featuredProjectId` em `site.ts`. `notifyflow`, `auditvault`,
+`budgetlens`, `observastack`, `schemasync`, `datasentry` e `lgpdflow` não
+declaram métrica de teste — por isso o agregado é 778+, não a soma dos 16 itens.
 
 ---
 
@@ -659,7 +665,7 @@ A Vercel atribui um domínio automático no primeiro deploy (ex: `portfolio-xyz.
 
 - Home é single-page — seções via scroll + hash anchors
 - Blog é rota separada (`/blog`, `/blog/[slug]`) — SSG via MDX files
-- Home mostra só os projetos `featured`; `/projects` lista os 11 com filtro + busca
+- Home mostra só os projetos `featured`; `/projects` lista os 16 com filtro + busca
 - Projeto em destaque = `featuredProjectId` em `site.ts` (precisa ter `caseStudy`)
 - `featured: true` nos projetos controla o que aparece na home
 - Disponibilidade para trabalho controlada por `personal.available` (boolean)
